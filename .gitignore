@@ -34,3 +34,10 @@ Icon
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
+
+target/classes/.netbeans_automatic_build
+*.class
+*.cpr
+target/ControlePonto-1.0-SNAPSHOT.jar
+target/maven-archiver/pom.properties
+target/test-classes/.netbeans_automatic_build
