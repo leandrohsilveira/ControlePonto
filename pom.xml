@@ -29,6 +29,85 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.directory>C:\Users\silveira\Documents\GitHub\ControlePonto\target</project.build.directory>
+        <maven.plugins.launch4j.targetdir>C:\Users\silveira\Documents\GitHub\ControlePonto\target\launch4j-laucher</maven.plugins.launch4j.targetdir>
     </properties>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.7.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>shaded</shadedClassifierName>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>br.com.pontocontrol.controleponto.ControlePonto</mainClass>
+                        </transformer>
+                    </transformers>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <id>l4j-clui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <jar>${project.build.directory}/${artifactId}-${version}-shaded.jar</jar>
+                            <outfile>${maven.plugins.launch4j.targetdir}/PontoControl.exe</outfile>
+                            <downloadUrl>http://java.com/download</downloadUrl>
+                            <classPath>
+                                <mainClass>br.com.pontocontrol.controleponto.ControlePonto</mainClass>
+                                <preCp>anything</preCp>
+                            </classPath>
+                            <icon>src/main/resources/icon/favicon.ico</icon>
+                            <jre>
+                                <minVersion>1.8.0</minVersion>
+                                <jdkPreference>preferJre</jdkPreference>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>${version}</txtFileVersion>
+                                <fileDescription>PontoController</fileDescription>
+                                <copyright>2014 Leandro Hinckel Silveira</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>1.0.0.0</txtProductVersion>
+                                <productName>PontoController</productName>
+                                <companyName>Leandro Hinckel Silveira</companyName>
+                                <internalName>lhsilveira</internalName>
+                                <originalFilename>hasCode.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     
 </project>

@@ -54,7 +54,8 @@ public class ExtObject {
     }
     
     protected static String mainPath() {
-        return main().getProtectionDomain().getCodeSource().getLocation().getPath();
+        final String path = main().getProtectionDomain().getCodeSource().getLocation().getPath();
+        return path.contains(".exe") || path.contains(".jar") ? path.replaceAll(".exe", "").replaceAll(".jar", "") : path;
     }
     
     protected static int getMesAtual() {

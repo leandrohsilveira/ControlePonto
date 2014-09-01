@@ -7,14 +7,8 @@
 package br.com.pontocontrol.controleponto.util;
 
 import br.com.pontocontrol.controleponto.ExtObject;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
