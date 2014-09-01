@@ -26,7 +26,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -41,3 +42,4 @@ target/classes/.netbeans_automatic_build
 target/ControlePonto-1.0-SNAPSHOT.jar
 target/maven-archiver/pom.properties
 target/test-classes/.netbeans_automatic_build
+/target/

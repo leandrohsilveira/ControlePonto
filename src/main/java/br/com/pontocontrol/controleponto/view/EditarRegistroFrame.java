@@ -7,11 +7,18 @@
 package br.com.pontocontrol.controleponto.view;
 
 import br.com.pontocontrol.controleponto.ControlePonto;
+import br.com.pontocontrol.controleponto.controller.ControllerFactory;
+import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
+import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -20,29 +27,20 @@ import javax.swing.JFrame;
 public class EditarRegistroFrame extends javax.swing.JFrame {
 
     public EditarRegistroFrame() {
-        this(null);
+        this(null, null);
     }
 
-    /**
-     * Creates new form EditarRegistroFrame
-     * @param registro
-     */
-    public EditarRegistroFrame(RegistroDiarioPonto registro) {
-        this(registro, null, null);
-    }
-    
-    public EditarRegistroFrame(RegistroDiarioPonto registro, Integer mes, Integer ano) {
+    public EditarRegistroFrame(Integer dia, FolhaMensalPonto folhaMensal) {
         initComponents();
-        this.registro = registro;
+        this.folhaMensal = folhaMensal;
         Calendar calendar = Calendar.getInstance();
-        if(registro != null) {
-            calendar.set(Calendar.DAY_OF_MONTH, registro.getDia());
+        if(dia != null) {
+            calendar.set(Calendar.DAY_OF_MONTH, dia);
+            this.registro = this.folhaMensal.getRegistros().get(dia);
         }
-        if(mes != null) {
-            calendar.set(Calendar.MONTH, mes);
-        }
-        if(ano != null) {
-            calendar.set(Calendar.YEAR, ano);
+        if(folhaMensal != null) {
+            calendar.set(Calendar.MONTH, folhaMensal.getMes());
+            calendar.set(Calendar.YEAR, folhaMensal.getAno());
         }
         data = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy").format(calendar.getTime());
         init();
@@ -50,24 +48,26 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }
     
     public static final String ID = "editar-registro-frame";
+    private static final String TIME_PATTERN = "HH:mm:ss";
     
     private String data;
+    private FolhaMensalPonto folhaMensal;
     private RegistroDiarioPonto registro;
+    private final DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern(TIME_PATTERN);
     
     private void init() {
         cmpData.setText(data);
-        String pattern = "HH:mm:ss";
         if(registro.getEntrada() != null) {
-            cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), pattern));
+            cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
         }
         if(registro.getAlmoco()!= null) {
-            cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), pattern));
+            cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), TIME_PATTERN));
         }
         if(registro.getRetorno()!= null) {
-            cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), pattern));
+            cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), TIME_PATTERN));
         }
         if(registro.getSaida()!= null) {
-            cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), pattern));
+            cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), TIME_PATTERN));
         }
         Double totAlmoco = registro.calcularTotalAlmocoAsNumber();
         Double totExp = registro.calcularTotalExpedienteAsNumber();
@@ -179,6 +179,11 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
 
         btnSalvar.setText("Salvar");
         btnSalvar.setToolTipText("Salvar registro diário.");
+        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalvarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -255,11 +260,27 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    IFolhaPontoController folhaPontoController;
+    
+    private IFolhaPontoController getFolhaPontoController() {
+        if(folhaPontoController == null) {
+            folhaPontoController = (IFolhaPontoController) ControllerFactory.localizar(IFolhaPontoController.class);
+        }
+        return folhaPontoController;
+    }
+    
+    private void fecharJanela() {
+        this.setVisible(false);
+        formWindowClosed(null);
+        this.invalidate();
+    }
+    
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         ControlePonto.apagarFrame(ID);
-        JFrame main = ControlePonto.getFrame(PainelPrincipalFrame.ID);
+        PainelPrincipalFrame main = (PainelPrincipalFrame) ControlePonto.getFrame(PainelPrincipalFrame.ID);
         main.setEnabled(true);
         main.requestFocus();
+        main.atualizarTabelaRegistros(folhaMensal.getMes());
     }//GEN-LAST:event_formWindowClosed
 
     private void cmpEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpEntradaActionPerformed
@@ -279,8 +300,41 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cmpSaidaActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
+        fecharJanela();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        String entrada = cmpEntrada.getText();
+        String almoco = cmpAlmoco.getText();
+        String retorno = cmpRetorno.getText();
+        String saida = cmpSaida.getText();
+        
+        boolean cadastrar = registro == null;
+        if(cadastrar) {
+            registro = new RegistroDiarioPonto();
+            registro.setDia(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        }
+        
+        if(StringUtils.isNotBlank(entrada)) {
+            registro.setEntrada(LocalTime.from(timeFormater.parse(entrada)));
+        }
+        if(StringUtils.isNotBlank(almoco)) {
+            registro.setAlmoco(LocalTime.from(timeFormater.parse(almoco)));
+        }
+        if(StringUtils.isNotBlank(retorno)) {
+            registro.setRetorno(LocalTime.from(timeFormater.parse(retorno)));
+        }
+        if(StringUtils.isNotBlank(saida)) {
+            registro.setEntrada(LocalTime.from(timeFormater.parse(saida)));
+        }
+        if(cadastrar) {
+            folhaMensal.getRegistros().put(registro.getDia(), registro);
+        }
+        getFolhaPontoController().sincronizar(folhaMensal);
+        JOptionPane.showMessageDialog(this, String.format("O registro do dia %s foi atualizado com sucesso.", data), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        
+        fecharJanela();
+    }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -332,4 +386,12 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
+
+    public FolhaMensalPonto getFolhaMensal() {
+        return folhaMensal;
+    }
+
+    public void setFolhaMensal(FolhaMensalPonto folhaMensal) {
+        this.folhaMensal = folhaMensal;
+    }
 }

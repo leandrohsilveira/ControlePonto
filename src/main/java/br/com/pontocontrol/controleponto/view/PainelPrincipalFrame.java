@@ -81,7 +81,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         } 
     }
     
-    private void atualizarTabelaRegistros(int mes) {
+    public void atualizarTabelaRegistros(int mes) {
         limparTabela();
         folhaMensal = getFolhaPontoController().recuperarFolhaMensal(mes);
         FolhaMensalPonto folha = folhaMensal.toModel();
@@ -324,8 +324,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         if(tabelaRegistros.getSelectedColumnCount() == 1) {
             Integer dia = (Integer) tabelaRegistros.getValueAt(tabelaRegistros.getSelectedRow(), 0);
             if(folhaMensal.registros.containsKey(dia)) {
-                RegistroDiarioPonto reg = folhaMensal.registros.get(dia).toModel();
-                final EditarRegistroFrame janelaEditar = new EditarRegistroFrame(reg, folhaMensal.mes, folhaMensal.ano);
+                final EditarRegistroFrame janelaEditar = new EditarRegistroFrame(dia, folhaMensal.toModel());
                 janelaEditar.setVisible(true);
                 this.setEnabled(false);
             }
