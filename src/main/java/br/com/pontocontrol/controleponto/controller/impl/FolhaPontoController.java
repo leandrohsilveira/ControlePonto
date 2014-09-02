@@ -43,14 +43,14 @@ public class FolhaPontoController extends ExtObject implements IFolhaPontoContro
     
     @Override
     public FolhaMensalPontoJSON recuperarFolhaMensal() {
-        return recuperarFolhaMensal(getMesAtual());
+        return recuperarFolhaMensal(getAnoAtual(), getMesAtual());
     }
 
     @Override
-    public FolhaMensalPontoJSON recuperarFolhaMensal(int mes) {
+    public FolhaMensalPontoJSON recuperarFolhaMensal(int ano, int mes) {
         try {
             IArquivoController cont = getArquivoController();
-            File arquivo = cont.recuperarArquivo(cont.getMonthFile(mes));
+            File arquivo = cont.recuperarArquivo(cont.getYearPath(ano), cont.getMonthFile(mes));
             if(arquivo.exists()) {
                 BufferedReader reader = cont.getArquivoParaLer(arquivo);
                 String conteudo = reader.readLine();
@@ -89,7 +89,7 @@ public class FolhaPontoController extends ExtObject implements IFolhaPontoContro
 
     @Override
     public void sincronizar(FolhaMensalPontoJSON json) {
-        File arquivo = getArquivoController().recuperarArquivo(getArquivoController().getMonthFile(json.mes));
+        File arquivo = getArquivoController().recuperarArquivo(getArquivoController().getYearPath(json.ano), getArquivoController().getMonthFile(json.mes));
         try (BufferedWriter writer = getArquivoController().getArquivoParaEscrever(arquivo);){
             writer.write(json.toJSON());
             getArquivoController().salvarArquivo(writer);

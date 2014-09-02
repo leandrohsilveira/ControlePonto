@@ -60,14 +60,19 @@ public class ArquivoController extends ExtObject implements IArquivoController {
     public String getYearPath() {
         Calendar calendar = Calendar.getInstance();
         int ano = calendar.get(Calendar.YEAR);
+        return getYearPath(ano);
+    }
+
+    @Override
+    public String getYearPath(int ano) {
         String path = format("%s/Y_%d", ROOT_PATH, ano);
         LOG.info(format("Recuperando diretório do ANO %d: %s", ano, path));
         return path;
     }
 
     @Override
-    public List<Integer> getAvalableFileMonths() {
-        File dir = new File(getYearPath());
+    public List<Integer> getAvalableFileMonths(int ano) {
+        File dir = new File(getYearPath(ano));
         List<Integer> saida = new ArrayList<Integer>();
         if(dir.exists()) {
             File[] listFiles = dir.listFiles();
@@ -78,17 +83,24 @@ public class ArquivoController extends ExtObject implements IArquivoController {
                 if(EXTENSAO_ARQUIVOS.equalsIgnoreCase(ext) && PREFIXO_ARQUIVOS.equalsIgnoreCase(nomeArquivoSplit[0])) {
                     String mesStr = nomeArquivoSplit[1];
                     try {
-                        Date date = new SimpleDateFormat("MMM").parse(mesStr);
+                        Date date = new SimpleDateFormat(SUFIXO_ARQUIVOS_PARSER).parse(mesStr);
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(date);
                         saida.add(calendar.get(Calendar.MONTH));
                     } catch (ParseException ex) {
-                        LOG.log(Level.SEVERE, format("Erro ao executar parse de data da entrada \"%s\" através do padrão \"MMM\"", mesStr), ex);
+                        LOG.log(Level.SEVERE, format("Erro ao executar parse de data da entrada \"%s\" através do padrão \"MMM\" o arquivo será descartado.", mesStr), ex);
                     }
                 }
             }
         }
         return saida;
+    }
+    
+    
+
+    @Override
+    public List<Integer> getAvalableFileMonths() {
+        return getAvalableFileMonths(Calendar.getInstance().get(Calendar.YEAR));
     }
 
     @Override
@@ -104,8 +116,7 @@ public class ArquivoController extends ExtObject implements IArquivoController {
     }
     
     @Override
-    public File recuperarArquivo(String nome) {
-        String path = getYearPath();
+    public File recuperarArquivo(String path, String nome) {
         File dir = new File(path);
         if(!dir.exists()) {
             dir.mkdirs();

@@ -20,7 +20,7 @@ public interface IFolhaPontoController {
     
     FolhaMensalPontoJSON recuperarFolhaMensal();
     
-    FolhaMensalPontoJSON recuperarFolhaMensal(int mes);
+    FolhaMensalPontoJSON recuperarFolhaMensal(int ano, int mes);
     
     RegistroDiarioPontoJSON recuperarRegistroDiario(FolhaMensalPontoJSON folhaMensal);
     

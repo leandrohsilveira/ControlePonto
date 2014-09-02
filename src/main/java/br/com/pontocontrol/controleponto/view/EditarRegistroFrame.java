@@ -279,7 +279,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         PainelPrincipalFrame main = (PainelPrincipalFrame) ControlePonto.getFrame(PainelPrincipalFrame.ID);
         main.setEnabled(true);
         main.requestFocus();
-        main.atualizarTabelaRegistros(folhaMensal.getMes());
+        main.atualizarTabelaRegistros(folhaMensal.getAno(), folhaMensal.getMes());
     }//GEN-LAST:event_formWindowClosed
 
     private void cmpEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpEntradaActionPerformed

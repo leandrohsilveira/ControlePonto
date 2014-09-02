@@ -20,14 +20,18 @@ import java.util.List;
 public interface IArquivoController {
     
     List<Integer> getAvalableFileMonths();
+
+    List<Integer> getAvalableFileMonths(int ano);
     
     String getYearPath();
+    
+    String getYearPath(int ano);
     
     String getMonthFile();
     
     String getMonthFile(int month);
     
-    File recuperarArquivo(String nome);
+    File recuperarArquivo(String path, String nome);
     
     BufferedWriter getArquivoParaEscrever(File arquivo);
     
