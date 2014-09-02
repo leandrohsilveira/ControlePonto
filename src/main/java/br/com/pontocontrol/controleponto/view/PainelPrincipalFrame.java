@@ -167,16 +167,17 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         painelPrincipal = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaRegistros = new javax.swing.JTable();
-        btnEditarRegistro = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         comboAnos = new javax.swing.JComboBox();
         jPanel3 = new javax.swing.JPanel();
         comboMeses = new javax.swing.JComboBox();
         jPanel4 = new javax.swing.JPanel();
         botaoRegistrar = new javax.swing.JButton();
-        btnRemoverRegistro = new javax.swing.JButton();
         cmpTotalMes = new javax.swing.JTextField();
         cmpUsuario = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        btnRemoverRegistro = new javax.swing.JButton();
+        btnEditarRegistro = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(704, 200));
@@ -191,7 +192,6 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
         painelPrincipal.setBackground(new java.awt.Color(255, 255, 255));
         painelPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Controle de Ponto [PontoController]", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 24))); // NOI18N
-        painelPrincipal.setMinimumSize(null);
         painelPrincipal.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 painelPrincipalMouseClicked(evt);
@@ -220,15 +220,6 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tabelaRegistros);
-
-        btnEditarRegistro.setText("Editar Registro");
-        btnEditarRegistro.setActionCommand("");
-        btnEditarRegistro.setEnabled(false);
-        btnEditarRegistro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarRegistroActionPerformed(evt);
-            }
-        });
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Ano"));
@@ -287,14 +278,6 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addComponent(botaoRegistrar))
         );
 
-        btnRemoverRegistro.setText("Remover Registro");
-        btnRemoverRegistro.setEnabled(false);
-        btnRemoverRegistro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRemoverRegistroActionPerformed2(evt);
-            }
-        });
-
         cmpTotalMes.setEditable(false);
         cmpTotalMes.setText("0,00");
         cmpTotalMes.setToolTipText("0,00");
@@ -314,6 +297,42 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Ações na tabela"));
+
+        btnRemoverRegistro.setText("Remover Registro");
+        btnRemoverRegistro.setEnabled(false);
+        btnRemoverRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverRegistroActionPerformed2(evt);
+            }
+        });
+
+        btnEditarRegistro.setText("Editar Registro");
+        btnEditarRegistro.setActionCommand("");
+        btnEditarRegistro.setEnabled(false);
+        btnEditarRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarRegistroActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(btnEditarRegistro)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRemoverRegistro))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btnRemoverRegistro)
+                .addComponent(btnEditarRegistro))
+        );
+
         javax.swing.GroupLayout painelPrincipalLayout = new javax.swing.GroupLayout(painelPrincipal);
         painelPrincipal.setLayout(painelPrincipalLayout);
         painelPrincipalLayout.setHorizontalGroup(
@@ -321,26 +340,22 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             .addGroup(painelPrincipalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(painelPrincipalLayout.createSequentialGroup()
-                        .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
                         .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
                             .addGroup(painelPrincipalLayout.createSequentialGroup()
-                                .addComponent(btnEditarRegistro)
+                                .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRemoverRegistro)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         painelPrincipalLayout.setVerticalGroup(
             painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -355,12 +370,9 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cmpUsuario))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
-                .addGap(8, 8, 8)
-                .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEditarRegistro)
-                    .addComponent(btnRemoverRegistro))
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -496,6 +508,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JTextField cmpUsuario;
     private javax.swing.JComboBox comboAnos;
     private javax.swing.JComboBox comboMeses;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
