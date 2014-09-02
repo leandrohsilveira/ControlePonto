@@ -16,8 +16,6 @@ import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
  */
 public interface IFolhaPontoController {
     
-    IArquivoController getArquivoController();
-    
     FolhaMensalPontoJSON recuperarFolhaMensal();
     
     FolhaMensalPontoJSON recuperarFolhaMensal(int ano, int mes);

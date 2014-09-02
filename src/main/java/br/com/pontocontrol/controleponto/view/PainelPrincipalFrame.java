@@ -7,6 +7,7 @@
 package br.com.pontocontrol.controleponto.view;
 
 import br.com.pontocontrol.controleponto.ControlePonto;
+import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IArquivoController;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
@@ -38,7 +39,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     public PainelPrincipalFrame() {
         initComponents();
         init();
-        ControlePonto.registrarFrame(ID, this);
+        SessaoManager.getInstance().registrarFrame(ID, this);
     }
     
     public static final String ID = "frame-principal";
@@ -56,7 +57,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
         atualizarComboMeses();
         atualizarComboAno();
-        cmpUsuario.setText(ControlePonto.getUsuario());
+        cmpUsuario.setText(SessaoManager.getInstance().getUsuarioAutenticado().getLogin());
     }
     
     private void atualizarComboMeses() {
@@ -138,14 +139,14 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     
     private IFolhaPontoController getFolhaPontoController() {
         if (folhaController == null) {
-            folhaController = (IFolhaPontoController) ControllerFactory.localizar(IFolhaPontoController.class);
+            folhaController = ControllerFactory.localizar(IFolhaPontoController.class);
         }
         return folhaController;
     }
     
     private IArquivoController getArquivoController() {
         if(arquivoController == null) {
-            arquivoController = (IArquivoController) ControllerFactory.localizar(IArquivoController.class);
+            arquivoController = ControllerFactory.localizar(IArquivoController.class);
         }
         return arquivoController;
     }

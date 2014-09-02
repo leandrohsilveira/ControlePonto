@@ -8,6 +8,7 @@ package br.com.pontocontrol.controleponto.controller.impl;
 
 import br.com.pontocontrol.controleponto.ControlePonto;
 import br.com.pontocontrol.controleponto.ExtObject;
+import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.IArquivoController;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,8 +55,6 @@ public class ArquivoController extends ExtObject implements IArquivoController {
     //CLASS:
     
     private static final Logger LOG = Logger.getLogger(ArquivoController.class.getName());
-    public static final String REGS_PATH = "/regs";
-    public static final String ROOT_PATH = format("%s%s", mainPath(), REGS_PATH);
     
     @Override
     public String getYearPath() {
@@ -66,7 +65,7 @@ public class ArquivoController extends ExtObject implements IArquivoController {
 
     @Override
     public String getYearPath(int ano) {
-        String path = format("%s/%s/Y_%d", ROOT_PATH, ControlePonto.getUsuario(), ano);
+        String path = format("%s/Y_%d", SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario(), ano);
         LOG.info(format("Recuperando diretório do ANO %d: %s", ano, path));
         return path;
     }

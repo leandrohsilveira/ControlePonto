@@ -6,6 +6,7 @@
 
 package br.com.pontocontrol.controleponto;
 
+import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.view.PainelPrincipalFrame;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +23,6 @@ public class ControlePonto extends ExtObject {
     
     private static final Logger LOG = Logger.getLogger(ControlePonto.class.getName());
     
-    private static Map<String, JFrame> frames = new HashMap<String, JFrame>();
-    private static String usuario;
-    
     /**
      * Main execution
      * 
@@ -32,44 +30,41 @@ public class ControlePonto extends ExtObject {
      */
     public static void main(String[] args) {
         LOG.info(format("Inicializando aplicação no diretório \"%s\"", mainPath()));
-        
-        usuario = JOptionPane.showInputDialog(null, "Informe seu usuário:", "Identificação", JOptionPane.INFORMATION_MESSAGE);
-        if(StringUtils.isNotBlank(usuario)) {
+        solicitarLogin();
+        if(SessaoManager.getInstance().getUsuarioAutenticado() != null) {
             PainelPrincipalFrame.main(args);
         }
         LOG.info(format("Finalizando aplicação do diretório \"%s\"", mainPath()));
     }
     
-    public static void registrarFrame(String id, JFrame frame) {
-        if(frames.containsKey(id)) {
-            LOG.info(format("Atualizando frame de ID \"%s\"", id));
-        } else {
-            LOG.info(format("Registrando frame de ID \"%s\"", id));
+    public static void solicitarLogin() {
+        String usuario;
+        do {
+            usuario = JOptionPane.showInputDialog(null, "Informe seu usuário:", "Identificação", JOptionPane.INFORMATION_MESSAGE);
+            if(StringUtils.isBlank(usuario)) {
+                JOptionPane.showMessageDialog(null, "Informe um login de usuário.", "Validação falhou.", JOptionPane.ERROR_MESSAGE);
+            }
+        } while (StringUtils.isBlank(usuario));
+        switch(SessaoManager.getInstance().autenticar(usuario)) {
+            case SessaoManager.LOGIN_STATUS.OK:
+                
+                break;
+            case SessaoManager.LOGIN_STATUS.USUARIO_NAO_EXISTE:
+                int opt = JOptionPane.showConfirmDialog(null, 
+                                                format("O usuário com o login informado \"%s\" não existe, deseja criar um novo usuário?", usuario), 
+                                                "Usuário não encontrado.", 
+                                                JOptionPane.YES_NO_OPTION, 
+                                                JOptionPane.WARNING_MESSAGE);
+                if(JOptionPane.YES_OPTION == opt) {
+                    ConfiguracoesUsuario configuracoesUsuario = new ConfiguracoesUsuario(usuario);
+                    SessaoManager.getInstance().criarUsuario(configuracoesUsuario);
+                    SessaoManager.getInstance().autenticar(usuario);
+                }
+                break;
+            default:
+                
+                break;
         }
-        frames.put(id, frame);
-    }
-    
-    public static JFrame getFrame(String id) {
-        if(frames.containsKey(id)) {
-            LOG.info(format("Localizado frame com ID \"%s\"", id));
-            return frames.get(id);
-        } else {
-            LOG.severe(format("O frame com ID \"%s\" não foi encontrado!", id));
-            return null;
-        }
-    }
-    
-    public static void apagarFrame(String id) {
-        if(frames.containsKey(id)) {
-            LOG.info(format("Apagando frame com ID \"%s\"", id));
-            frames.remove(id);
-        } else {
-            LOG.warning(format("O frame com ID \"%s\" não foi encontrado!", id));
-        }
-    }
-    
-    public static String getUsuario() {
-        return usuario;
     }
     
 }

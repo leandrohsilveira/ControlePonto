@@ -79,10 +79,9 @@ public class FolhaPontoController extends ExtObject implements IFolhaPontoContro
         return folhaMensal.registros.get(dia);
     }
 
-    @Override
     public IArquivoController getArquivoController() {
         if(arquivoController == null) {
-            arquivoController = (IArquivoController) ControllerFactory.localizar(IArquivoController.class);
+            arquivoController = ControllerFactory.localizar(IArquivoController.class);
         }
         return arquivoController;
     }

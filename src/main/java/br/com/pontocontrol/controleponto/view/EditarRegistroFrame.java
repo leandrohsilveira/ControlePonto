@@ -7,6 +7,7 @@
 package br.com.pontocontrol.controleponto.view;
 
 import br.com.pontocontrol.controleponto.ControlePonto;
+import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
@@ -43,7 +44,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         }
         data = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy").format(calendar.getTime());
         init();
-        ControlePonto.registrarFrame(ID, this);
+        SessaoManager.getInstance().registrarFrame(ID, this);
     }
     
     public static final String ID = "editar-registro-frame";
@@ -263,7 +264,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     
     private IFolhaPontoController getFolhaPontoController() {
         if(folhaPontoController == null) {
-            folhaPontoController = (IFolhaPontoController) ControllerFactory.localizar(IFolhaPontoController.class);
+            folhaPontoController = ControllerFactory.localizar(IFolhaPontoController.class);
         }
         return folhaPontoController;
     }
@@ -275,8 +276,8 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }
     
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        ControlePonto.apagarFrame(ID);
-        PainelPrincipalFrame main = (PainelPrincipalFrame) ControlePonto.getFrame(PainelPrincipalFrame.ID);
+        SessaoManager.getInstance().apagarFrame(ID);
+        PainelPrincipalFrame main = (PainelPrincipalFrame) SessaoManager.getInstance().getFrame(PainelPrincipalFrame.ID);
         main.setEnabled(true);
         main.requestFocus();
         main.atualizarTabelaRegistros(folhaMensal.getAno(), folhaMensal.getMes());

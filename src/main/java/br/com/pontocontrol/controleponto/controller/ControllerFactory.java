@@ -7,6 +7,7 @@
 package br.com.pontocontrol.controleponto.controller;
 
 import br.com.pontocontrol.controleponto.controller.impl.ArquivoController;
+import br.com.pontocontrol.controleponto.controller.impl.ConfiguracaoUsuarioController;
 import br.com.pontocontrol.controleponto.controller.impl.FolhaPontoController;
 import java.util.logging.Logger;
 
@@ -18,17 +19,20 @@ public class ControllerFactory {
     
     private static final Logger LOG = Logger.getLogger(ControllerFactory.class.getName());
     
-    public static Object localizar(Class<?> controllerInterface) {
+    public static <I> I localizar(Class<I> controllerInterface) {
         if(controllerInterface == null) {
             LOG.severe("Classe informada é nula.");
             return null;
         }
         if(controllerInterface.isInterface()) {
             if(controllerInterface.isAssignableFrom(ArquivoController.class)) {
-                return ArquivoController.getInstance();
+                return (I) ArquivoController.getInstance();
             }
             if(controllerInterface.isAssignableFrom(FolhaPontoController.class)) {
-                return FolhaPontoController.getInstance();
+                return (I) FolhaPontoController.getInstance();
+            }
+            if(controllerInterface.isAssignableFrom(ConfiguracaoUsuarioController.class)) {
+                return (I) ConfiguracaoUsuarioController.getInstance();
             }
             LOG.severe("Implementação de controle não localizada para a interface informada.");
             return null;
