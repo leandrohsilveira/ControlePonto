@@ -8,10 +8,8 @@ package br.com.pontocontrol.controleponto;
 
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.view.PainelPrincipalFrame;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.Image;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 
@@ -30,6 +28,8 @@ public class ControlePonto extends ExtObject {
      */
     public static void main(String[] args) {
         LOG.info(format("Inicializando aplicação no diretório \"%s\"", mainPath()));
+//        File f = getFileResource("icon/favicon.ico");
+//        LOG.info(format("File.exists = %b", f.exists()));
         solicitarLogin();
         if(SessaoManager.getInstance().getUsuarioAutenticado() != null) {
             PainelPrincipalFrame.main(args);

@@ -10,10 +10,15 @@ import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IConfiguracaoUsuarioController;
 import br.com.pontocontrol.controleponto.controller.json.impl.ConfiguracoesUsuarioJSON;
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
+import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
@@ -107,6 +112,14 @@ public class SessaoManager extends ExtObject {
         } else {
             LOG.warning(format("O frame com ID \"%s\" não foi encontrado!", id));
         }
+    }
+    
+    public File getResource(String res) {
+        return SessaoManager.getFileResource(res);
+    }
+    
+    public Image getImageResource(String res) {
+        return SessaoManager.getFileImageResource(res);
     }
     
 }

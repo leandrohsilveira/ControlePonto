@@ -14,6 +14,7 @@ import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.controller.json.impl.FolhaMensalPontoJSON;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
+import java.awt.Image;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -43,6 +44,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }
     
     public static final String ID = "frame-principal";
+    public static final String TITULO = "PontoController - Painel Principal";
     
     private FolhaMensalPontoJSON folhaMensal;
     private IFolhaPontoController folhaController;
@@ -58,6 +60,11 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarComboMeses();
         atualizarComboAno();
         cmpUsuario.setText(SessaoManager.getInstance().getUsuarioAutenticado().getLogin());
+        Image img = SessaoManager.getInstance().getImageResource("icon/icon.png");
+        if(img != null) {
+            setIconImage(img);
+        }
+        setTitle(TITULO);
     }
     
     private void atualizarComboMeses() {

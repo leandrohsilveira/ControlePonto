@@ -13,10 +13,18 @@ import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 
@@ -48,7 +56,9 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }
     
     public static final String ID = "editar-registro-frame";
+    public static final String TITULO = "PontoController - Formulário de Registro";
     private static final String TIME_PATTERN = "HH:mm:ss";
+    private static final Logger LOG = Logger.getLogger(EditarRegistroFrame.class.getName());
     
     private String data;
     private FolhaMensalPonto folhaMensal;
@@ -81,6 +91,13 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         if(totExp > 0) {
             cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, TimeUtils.OFFSET_8_HORAS), var));
         }
+        
+        Image img = SessaoManager.getInstance().getImageResource("icon/icon.png");
+        if(img != null) {
+            setIconImage(img);
+        }
+        
+        setTitle(TITULO);
     }
 
     /**
