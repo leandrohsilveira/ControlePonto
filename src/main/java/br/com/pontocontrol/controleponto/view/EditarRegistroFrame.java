@@ -324,7 +324,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             registro.setRetorno(LocalTime.from(timeFormater.parse(retorno)));
         }
         if(StringUtils.isNotBlank(saida)) {
-            registro.setEntrada(LocalTime.from(timeFormater.parse(saida)));
+            registro.setSaida(LocalTime.from(timeFormater.parse(saida)));
         }
         if(cadastrar) {
             folhaMensal.getRegistros().put(registro.getDia(), registro);

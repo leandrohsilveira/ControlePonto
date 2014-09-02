@@ -3,6 +3,9 @@
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[704, 200]"/>
+    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -49,6 +52,9 @@
             </TitledBorder>
           </Border>
         </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="null"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="painelPrincipalMouseClicked"/>
@@ -61,27 +67,28 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="jScrollPane1" max="32767" attributes="0"/>
+                          <Component id="cmpUsuario" min="-2" pref="135" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="cmpTotalMes" min="-2" pref="107" max="-2" attributes="0"/>
+                          <EmptySpace min="378" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jScrollPane1" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="btnEditarRegistro" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btnRemoverRegistro" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cmpTotalMes" min="-2" pref="149" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace min="104" pref="116" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -91,10 +98,16 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                       <Component id="jPanel4" alignment="1" max="32767" attributes="0"/>
                       <Component id="jPanel3" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="cmpTotalMes" alignment="1" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="jPanel2" max="32767" attributes="0"/>
+                              <Component id="cmpUsuario" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="395" max="32767" attributes="0"/>
@@ -126,7 +139,7 @@
                     <Column editable="false" title="Retorno" type="java.lang.Object"/>
                     <Column editable="false" title="Saida" type="java.lang.Object"/>
                     <Column editable="false" title="Expediente" type="java.lang.Object"/>
-                    <Column editable="false" title="Intervalo" type="java.lang.Object"/>
+                    <Column editable="false" title="Varia&#xe7;&#xe3;o" type="java.lang.Object"/>
                   </Table>
                 </Property>
               </Properties>
@@ -287,6 +300,20 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmpTotalMesActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JTextField" name="cmpUsuario">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Usu&#xe1;rio"/>
+              </Border>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmpUsuarioActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

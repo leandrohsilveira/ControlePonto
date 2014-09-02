@@ -56,6 +56,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
         atualizarComboMeses();
         atualizarComboAno();
+        cmpUsuario.setText(ControlePonto.getUsuario());
     }
     
     private void atualizarComboMeses() {
@@ -175,8 +176,10 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         botaoRegistrar = new javax.swing.JButton();
         btnRemoverRegistro = new javax.swing.JButton();
         cmpTotalMes = new javax.swing.JTextField();
+        cmpUsuario = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(704, 200));
         addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 formFocusGained(evt);
@@ -188,6 +191,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
         painelPrincipal.setBackground(new java.awt.Color(255, 255, 255));
         painelPrincipal.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Controle de Ponto [PontoController]", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 24))); // NOI18N
+        painelPrincipal.setMinimumSize(null);
         painelPrincipal.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 painelPrincipalMouseClicked(evt);
@@ -199,7 +203,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Dia", "Entrada", "Almoço", "Retorno", "Saida", "Expediente", "Intervalo"
+                "Dia", "Entrada", "Almoço", "Retorno", "Saida", "Expediente", "Variação"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -301,6 +305,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
+        cmpUsuario.setEditable(false);
+        cmpUsuario.setToolTipText("");
+        cmpUsuario.setBorder(javax.swing.BorderFactory.createTitledBorder("Usuário"));
+        cmpUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmpUsuarioActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout painelPrincipalLayout = new javax.swing.GroupLayout(painelPrincipal);
         painelPrincipal.setLayout(painelPrincipalLayout);
         painelPrincipalLayout.setHorizontalGroup(
@@ -309,32 +322,38 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())
+                        .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
                         .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
                             .addGroup(painelPrincipalLayout.createSequentialGroup()
                                 .addComponent(btnEditarRegistro)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRemoverRegistro))
-                            .addGroup(painelPrincipalLayout.createSequentialGroup()
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(104, 116, Short.MAX_VALUE))))
+                                .addComponent(btnRemoverRegistro)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         painelPrincipalLayout.setVerticalGroup(
             painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelPrincipalLayout.createSequentialGroup()
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmpTotalMes, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(cmpTotalMes, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(painelPrincipalLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cmpUsuario))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                 .addGap(8, 8, 8)
@@ -427,6 +446,10 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarBotoes();
     }//GEN-LAST:event_painelPrincipalMouseClicked
 
+    private void cmpUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpUsuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmpUsuarioActionPerformed
+
                                         
 
     /**
@@ -470,6 +493,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnEditarRegistro;
     private javax.swing.JButton btnRemoverRegistro;
     private javax.swing.JTextField cmpTotalMes;
+    private javax.swing.JTextField cmpUsuario;
     private javax.swing.JComboBox comboAnos;
     private javax.swing.JComboBox comboMeses;
     private javax.swing.JPanel jPanel2;

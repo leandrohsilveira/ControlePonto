@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -21,6 +23,7 @@ public class ControlePonto extends ExtObject {
     private static final Logger LOG = Logger.getLogger(ControlePonto.class.getName());
     
     private static Map<String, JFrame> frames = new HashMap<String, JFrame>();
+    private static String usuario;
     
     /**
      * Main execution
@@ -30,8 +33,10 @@ public class ControlePonto extends ExtObject {
     public static void main(String[] args) {
         LOG.info(format("Inicializando aplicação no diretório \"%s\"", mainPath()));
         
-        PainelPrincipalFrame.main(args);
-        
+        usuario = JOptionPane.showInputDialog(null, "Informe seu usuário:", "Identificação", JOptionPane.INFORMATION_MESSAGE);
+        if(StringUtils.isNotBlank(usuario)) {
+            PainelPrincipalFrame.main(args);
+        }
         LOG.info(format("Finalizando aplicação do diretório \"%s\"", mainPath()));
     }
     
@@ -61,6 +66,10 @@ public class ControlePonto extends ExtObject {
         } else {
             LOG.warning(format("O frame com ID \"%s\" não foi encontrado!", id));
         }
+    }
+    
+    public static String getUsuario() {
+        return usuario;
     }
     
 }
