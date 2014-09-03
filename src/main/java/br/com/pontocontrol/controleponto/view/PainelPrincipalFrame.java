@@ -80,15 +80,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             meses.add(mesAtual);
             Collections.sort(meses);
         }
-        for (Integer mes : meses) {
+        meses.stream().forEach((mes) -> {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, mes);
             String mesFormatado = FORMATO_COMBO_MESES.format(calendar.getTime());
             defaultComboBoxModel.addElement(mesFormatado);
-            if(mesAtual == mes) {
+            if (mesAtual == mes) {
                 defaultComboBoxModel.setSelectedItem(mesFormatado);
             }
-        }
+        });
         comboMeses.setModel(defaultComboBoxModel);
     }
     
@@ -100,19 +100,19 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             anos.add(anoAtual);
             Collections.sort(anos);
         }
-        for (Integer ano : anos) {
+        anos.stream().forEach((ano) -> {
             defaultComboBoxModel.addElement(ano.toString());
             if(anoAtual == ano) {
                 defaultComboBoxModel.setSelectedItem(ano.toString());
             }
-        }
+        });
         comboAnos.setModel(defaultComboBoxModel);
     }
     
     private void limparTabela() {
-        for(int i = 0; i < tableModel.getRowCount(); i++) {
-            tableModel.removeRow(i);
-        } 
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
     }
     
     public void atualizarTabelaRegistros(int ano, int mes) {
@@ -124,8 +124,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         NumberFormat formater = DecimalFormat.getNumberInstance();
         cmpTotalMes.setText(formater.format(totalMensal));
         cmpTotalMes.setToolTipText(String.format("Variação: %s", formater.format(totalVariacao)));
-        for (Integer dia :  folha.getRegistros().keySet()) {
-            RegistroDiarioPonto reg = folha.getRegistros().get(dia);
+        folha.getRegistros().keySet().stream().map((dia) -> folha.getRegistros().get(dia)).forEach((reg) -> {
             LocalTime totalTime = reg.calcularTotalExpediente();
             String entrada = reg.getEntrada() != null ? timeFormater.format(reg.getEntrada()) : "Pendente";
             String almoco = reg.getAlmoco()!= null ? timeFormater.format(reg.getAlmoco()) : "Pendente";
@@ -133,15 +132,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             String saida = reg.getSaida()!= null ? timeFormater.format(reg.getSaida()) : "Pendente";
             String total = totalTime != null ? timeFormater.format(totalTime) : "-";
             String var = totalTime != null ? DecimalFormat.getNumberInstance().format(reg.calcularVariacaoExpediente()) : "-";
-            addRow(tableModel, 
-                    reg.getDia(), 
-                    entrada, 
-                    almoco, 
-                    retorno, 
-                    saida, 
+            addRow(tableModel,
+                    reg.getDia(),
+                    entrada,
+                    almoco,
+                    retorno,
+                    saida,
                     total, 
                     var);
-        }
+        });
     }
     
     private void addRow(DefaultTableModel model, Object... objects) {
