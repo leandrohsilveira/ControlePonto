@@ -11,6 +11,7 @@ import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
+import br.com.pontocontrol.controleponto.util.SwingUtils;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
@@ -60,6 +61,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     
     private void init() {
         cmpData.setText(data);
+        SwingUtils.setTimeMasks(cmpEntrada, cmpAlmoco, cmpRetorno, cmpSaida);
         if(registro.getEntrada() != null) {
             cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
         }
@@ -133,34 +135,30 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         cmpData.setBorder(javax.swing.BorderFactory.createTitledBorder("Data"));
 
         cmpEntrada.setBorder(javax.swing.BorderFactory.createTitledBorder("Entrada"));
-        cmpEntrada.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getTimeInstance())));
-        cmpEntrada.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmpEntradaActionPerformed(evt);
+        cmpEntrada.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmpEntradaFocusLost(evt);
             }
         });
 
         cmpAlmoco.setBorder(javax.swing.BorderFactory.createTitledBorder("Saída para Intervalo"));
-        cmpAlmoco.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getTimeInstance())));
-        cmpAlmoco.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmpAlmocoActionPerformed(evt);
+        cmpAlmoco.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmpAlmocoFocusLost(evt);
             }
         });
 
         cmpRetorno.setBorder(javax.swing.BorderFactory.createTitledBorder("Retorno do Intervalo"));
-        cmpRetorno.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getTimeInstance())));
-        cmpRetorno.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmpRetornoActionPerformed(evt);
+        cmpRetorno.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmpRetornoFocusLost(evt);
             }
         });
 
         cmpSaida.setBorder(javax.swing.BorderFactory.createTitledBorder("Saída"));
-        cmpSaida.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getTimeInstance())));
-        cmpSaida.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmpSaidaActionPerformed(evt);
+        cmpSaida.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmpSaidaFocusLost(evt);
             }
         });
 
@@ -217,15 +215,11 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
                             .addComponent(cmpTotalExpediente))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmpTotalAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(cmpTotalVariacao, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                                    .addComponent(btnCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                            .addComponent(cmpTotalVariacao, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmpTotalAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -250,7 +244,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(cmpTotalVariacao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCancelar))
                     .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 12, Short.MAX_VALUE))
@@ -260,7 +254,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -292,22 +286,6 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         main.requestFocus();
         main.atualizarTabelaRegistros(folhaMensal.getAno(), folhaMensal.getMes());
     }//GEN-LAST:event_formWindowClosed
-
-    private void cmpEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpEntradaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmpEntradaActionPerformed
-
-    private void cmpAlmocoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpAlmocoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmpAlmocoActionPerformed
-
-    private void cmpRetornoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpRetornoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmpRetornoActionPerformed
-
-    private void cmpSaidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpSaidaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmpSaidaActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         fecharJanela();
@@ -345,6 +323,22 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         
         fecharJanela();
     }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void cmpEntradaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpEntradaFocusLost
+        SwingUtils.validateDateFields(cmpEntrada);
+    }//GEN-LAST:event_cmpEntradaFocusLost
+
+    private void cmpAlmocoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpAlmocoFocusLost
+        SwingUtils.validateDateFields(cmpAlmoco);
+    }//GEN-LAST:event_cmpAlmocoFocusLost
+
+    private void cmpRetornoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpRetornoFocusLost
+        SwingUtils.validateDateFields(cmpRetorno);
+    }//GEN-LAST:event_cmpRetornoFocusLost
+
+    private void cmpSaidaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpSaidaFocusLost
+        SwingUtils.validateDateFields(cmpSaida);
+    }//GEN-LAST:event_cmpSaidaFocusLost
 
     /**
      * @param args the command line arguments
