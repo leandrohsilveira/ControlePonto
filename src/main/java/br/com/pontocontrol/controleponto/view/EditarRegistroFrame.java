@@ -94,7 +94,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         
         setTitle(TITULO);
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -292,10 +292,6 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        String entrada = cmpEntrada.getText();
-        String almoco = cmpAlmoco.getText();
-        String retorno = cmpRetorno.getText();
-        String saida = cmpSaida.getText();
         
         boolean cadastrar = registro == null;
         if(cadastrar) {
@@ -303,18 +299,10 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             registro.setDia(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
         }
         
-        if(StringUtils.isNotBlank(entrada)) {
-            registro.setEntrada(LocalTime.from(timeFormater.parse(entrada)));
-        }
-        if(StringUtils.isNotBlank(almoco)) {
-            registro.setAlmoco(LocalTime.from(timeFormater.parse(almoco)));
-        }
-        if(StringUtils.isNotBlank(retorno)) {
-            registro.setRetorno(LocalTime.from(timeFormater.parse(retorno)));
-        }
-        if(StringUtils.isNotBlank(saida)) {
-            registro.setSaida(LocalTime.from(timeFormater.parse(saida)));
-        }
+        registro.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
+        registro.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
+        registro.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
+        registro.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
         if(cadastrar) {
             folhaMensal.getRegistros().put(registro.getDia(), registro);
         }

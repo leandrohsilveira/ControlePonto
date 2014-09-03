@@ -8,6 +8,9 @@ package br.com.pontocontrol.controleponto.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +25,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SwingUtils {
     
+    private static final String TIME_PATTERN = "HH:mm:ss";
     private static final Logger LOG = Logger.getLogger(SwingUtils.class.getName());
     private static final String TIME_MASK = "##:##:##";
-    private static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat SIMPLE_TIME_FORMATTER = new SimpleDateFormat(TIME_PATTERN);
+    private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
     
     public static JFormattedTextField setTimeMask(JFormattedTextField field) {
         return setMask(field, TIME_MASK);
@@ -56,14 +61,24 @@ public class SwingUtils {
             try {
                 String valor = field.getText();
                 if(StringUtils.isNotBlank(valor)) {
-                    Date date = TIME_FORMATTER.parse(valor);
-                    field.setText(TIME_FORMATTER.format(date));
+                    Date date = SIMPLE_TIME_FORMATTER.parse(valor);
+                    field.setText(SIMPLE_TIME_FORMATTER.format(date));
                 }
             } catch (ParseException ex) {
                 field.setText("");
             }
             
         }
+    }
+    
+    public static LocalTime getLocalTimeValueFromField(JTextField field) {
+        String value = field.getText();
+        if(StringUtils.isNotBlank(value)) {
+            try {
+                return LocalTime.from(LOCAL_TIME_FORMATTER.parse(value));
+            } catch (DateTimeParseException e) {}
+        }
+        return null;
     }
     
 }
