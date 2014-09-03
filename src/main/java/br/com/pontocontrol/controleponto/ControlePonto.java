@@ -27,14 +27,12 @@ public class ControlePonto extends ExtObject {
      * @param args 
      */
     public static void main(String[] args) {
-        LOG.info(format("Inicializando aplicação no diretório \"%s\"", mainPath()));
-//        File f = getFileResource("icon/favicon.ico");
-//        LOG.info(format("File.exists = %b", f.exists()));
+        LOG.info(format("Inicializando aplicação no diretório \"%s\"", projectDataPath()));
         solicitarLogin();
         if(SessaoManager.getInstance().getUsuarioAutenticado() != null) {
             PainelPrincipalFrame.main(args);
         }
-        LOG.info(format("Finalizando aplicação do diretório \"%s\"", mainPath()));
+        LOG.info(format("Finalizando aplicação do diretório \"%s\"", projectDataPath()));
     }
     
     public static void solicitarLogin() {

@@ -6,7 +6,6 @@
 
 package br.com.pontocontrol.controleponto.controller.impl;
 
-import br.com.pontocontrol.controleponto.ControlePonto;
 import br.com.pontocontrol.controleponto.ExtObject;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.IArquivoController;
@@ -35,6 +34,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class ArquivoController extends ExtObject implements IArquivoController {
     
+    public static final String PREFIXO_PASTAS = "Y";
     public static final String PREFIXO_ARQUIVOS = "reg";
     public static final String ARQUIVO_SPLITTER = "_";
     public static final String SUFIXO_ARQUIVOS_PARSER = "MMM";
@@ -65,11 +65,37 @@ public class ArquivoController extends ExtObject implements IArquivoController {
 
     @Override
     public String getYearPath(int ano) {
-        String path = format("%s/Y_%d", SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario(), ano);
+        String path = format("%s/%s_%d", SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario(), PREFIXO_PASTAS, ano);
         LOG.info(format("Recuperando diretório do ANO %d: %s", ano, path));
         return path;
     }
-
+    
+    @Override
+    public List<Integer> getAvalableYearFolders() {
+        File dir = new File(SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario());
+        List<Integer> saida = new ArrayList<Integer>();
+        if(dir.exists()) {
+            File[] listFiles = dir.listFiles();
+            for (File file : listFiles) {
+                if(file.isDirectory()) {
+                    final String nomeDir = FilenameUtils.getBaseName(file.getName());
+                    final String[] dirSplit = nomeDir.split(ARQUIVO_SPLITTER);
+                    if(dirSplit.length == 2 && PREFIXO_ARQUIVOS.equalsIgnoreCase(dirSplit[0])) {
+                        String anoStr = dirSplit[1];
+                        try {
+                            saida.add(Integer.valueOf(anoStr));
+                        } catch (NumberFormatException ex) {
+                            LOG.log(Level.SEVERE, format("Erro ao executar parse da pasta \"%s\", o padrão \"%s\" não é um ano válido.", nomeDir, anoStr), ex);
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
+        return saida;
+    }
+    
     @Override
     public List<Integer> getAvalableFileMonths(int ano) {
         File dir = new File(getYearPath(ano));
@@ -80,7 +106,7 @@ public class ArquivoController extends ExtObject implements IArquivoController {
                 final String ext = FilenameUtils.getExtension(file.getName());
                 final String nomeArquivo = FilenameUtils.getBaseName(file.getName());
                 final String[] nomeArquivoSplit = nomeArquivo.split("_");
-                if(EXTENSAO_ARQUIVOS.equalsIgnoreCase(ext) && PREFIXO_ARQUIVOS.equalsIgnoreCase(nomeArquivoSplit[0])) {
+                if(file.isFile() && EXTENSAO_ARQUIVOS.equalsIgnoreCase(ext) && PREFIXO_ARQUIVOS.equalsIgnoreCase(nomeArquivoSplit[0])) {
                     String mesStr = nomeArquivoSplit[1];
                     try {
                         Date date = new SimpleDateFormat(SUFIXO_ARQUIVOS_PARSER).parse(mesStr);
@@ -96,8 +122,6 @@ public class ArquivoController extends ExtObject implements IArquivoController {
         return saida;
     }
     
-    
-
     @Override
     public List<Integer> getAvalableFileMonths() {
         return getAvalableFileMonths(Calendar.getInstance().get(Calendar.YEAR));

@@ -19,6 +19,8 @@ import java.util.List;
  */
 public interface IArquivoController {
     
+    List<Integer> getAvalableYearFolders();
+    
     List<Integer> getAvalableFileMonths();
 
     List<Integer> getAvalableFileMonths(int ano);

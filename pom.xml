@@ -4,6 +4,7 @@
     
     <groupId>br.com.pontocontrol</groupId>
     <artifactId>ControlePonto</artifactId>
+    <name>PontoControl</name>
     <version>1.0-SNAPSHOT</version>
     
     <packaging>jar</packaging>
@@ -29,6 +30,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.exec.version>1.0.0.0</project.exec.version>
+        <project.dirname.root>${project.name}</project.dirname.root>
+        <project.dirname.bin>bin</project.dirname.bin>
+        <project.dirname.img>img</project.dirname.img>
+        <project.dirname.data>data</project.dirname.data>
+        <project.target.path.root>${project.build.directory}/${project.dirname.root}</project.target.path.root>
     </properties>
     
     <build>
@@ -38,8 +45,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -78,28 +85,28 @@
                         <configuration>
                             <headerType>gui</headerType>
                             <jar>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</jar>
-                            <outfile>${project.build.directory}/PontoControl.exe</outfile>
+                            <outfile>${project.target.path.root}/${project.dirname.bin}/${project.name}.exe</outfile>
                             <downloadUrl>http://java.com/download</downloadUrl>
                             <classPath>
                                 <mainClass>br.com.pontocontrol.controleponto.ControlePonto</mainClass>
                                 <preCp>anything</preCp>
                             </classPath>
-                            <icon>src/main/resources/icon/favicon.ico</icon>
+                            <icon>src/main/resources/${project.dirname.img}/favicon.ico</icon>
                             <jre>
                                 <minVersion>1.8.0</minVersion>
                                 <jdkPreference>preferJre</jdkPreference>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>PontoController</fileDescription>
-                                <copyright>2014 Leandro Hinckel Silveira</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>PontoController</productName>
+                                <fileVersion>${project.exec.version}</fileVersion>
+                                <txtFileVersion>${project.exec.version}</txtFileVersion>
+                                <fileDescription>${project.name}</fileDescription>
+                                <copyright>2014 - Leandro Hinckel Silveira</copyright>
+                                <productVersion>${project.exec.version}</productVersion>
+                                <txtProductVersion>${project.exec.version}</txtProductVersion>
+                                <productName>${project.name}</productName>
                                 <companyName>Leandro Hinckel Silveira</companyName>
                                 <internalName>lhsilveira</internalName>
-                                <originalFilename>PontoController.exe</originalFilename>
+                                <originalFilename>${project.name}.exe</originalFilename>
                             </versionInfo>
                         </configuration>
                     </execution>
@@ -116,8 +123,28 @@
         </plugins>
         <resources>
             <resource>
+                <includes>
+                    <include>${project.dirname.bin}/*.properties</include>
+                </includes>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.target.path.root}</targetPath>
+            </resource>
+            <resource>
+                <includes>
+                    <include>${project.dirname.img}/*</include>
+                </includes>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
+                <targetPath>${project.target.path.root}</targetPath>
+            </resource>
+            <resource>
+                <includes>
+                    <include>${project.dirname.img}/*</include>
+                </includes>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <targetPath>${project.build.directory}</targetPath>
             </resource>
         </resources>
     </build>

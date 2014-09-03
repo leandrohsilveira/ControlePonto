@@ -114,8 +114,8 @@ public class SessaoManager extends ExtObject {
         }
     }
     
-    public File getResource(String res) {
-        return SessaoManager.getFileResource(res);
+    public File getFile(String path, String res) {
+        return SessaoManager.getFileResource(path, res);
     }
     
     public Image getImageResource(String res) {

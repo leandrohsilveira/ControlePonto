@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -65,38 +66,35 @@ public class ExtObject {
         return ControlePonto.class;
     }
     
-    protected static String mainPath() {
-        final String path = main().getProtectionDomain().getCodeSource().getLocation().getPath();
-        return path.contains(".exe") || path.contains(".jar") ? path.replaceAll(".exe", "").replaceAll(".jar", "") : path;
+    protected static String projectRootPath() {
+        String buildDir = FilenameUtils.getFullPath(main().getProtectionDomain().getCodeSource().getLocation().getFile());
+        return new File(buildDir).getParentFile().getAbsolutePath();
     }
     
-    protected static File getFileResource(String resource) {
-        try {
-            final URL url = main().getClassLoader().getResource(resource);
-            if(url != null) {
-                URI uri = url.toURI();
-                return new File(uri);
-            } else {
-                LOG.severe("Resource não encontrado.");
-            }
-        } catch (URISyntaxException ex) {
-            LOG.log(Level.SEVERE, "Erro de sintaxe de URI.", ex);
-        }
-        return null;
+    protected static String projectDataPath() {
+        return format("%s/data", projectRootPath());
     }
     
-    public static Image getFileImageResource(String res) {
+    protected static String projectImagesPath() {
+        return format("%s/img", projectRootPath());
+    }
+    
+    protected static String projectBinPath() {
+        return format("%s/bin", projectRootPath());
+    }
+    
+    protected static File getFileResource(String path, String resource) {
+        return new File(format("%s/%s", path, resource));
+    }
+    
+    protected static Image getFileImageResource(String res) {
         try {
-            final File file = getFileResource(res);
+            final File file = getFileResource(projectImagesPath(), res);
             return ImageIO.read(file);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Erro ao ler ícone para janela e barra de tarefas.", ex);
             return null;
         }
-    }
-    
-     public InputStream getResourceAsStream(String res) {
-        return main().getResourceAsStream(res);
     }
     
     protected static int getMesAtual() {

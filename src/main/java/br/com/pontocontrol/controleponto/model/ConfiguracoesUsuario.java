@@ -34,7 +34,7 @@ public class ConfiguracoesUsuario extends ExtObject {
     private long offset = TimeUtils.OFFSET_8_HORAS;
     
     public String getPathUsuario() {
-        return format("%s/%s", mainPath(), login);
+        return format("%s/%s", projectDataPath(), login);
     }
 
     public String getLogin() {

@@ -173,6 +173,9 @@
                   </StringArray>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboAnosActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -215,6 +218,9 @@
                   </StringArray>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboMesesActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

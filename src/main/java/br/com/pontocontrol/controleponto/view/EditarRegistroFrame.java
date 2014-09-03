@@ -6,7 +6,6 @@
 
 package br.com.pontocontrol.controleponto.view;
 
-import br.com.pontocontrol.controleponto.ControlePonto;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
@@ -14,17 +13,11 @@ import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageInputStream;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
 
@@ -92,7 +85,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, TimeUtils.OFFSET_8_HORAS), var));
         }
         
-        Image img = SessaoManager.getInstance().getImageResource("icon/icon.png");
+        Image img = SessaoManager.getInstance().getImageResource("icon.png");
         if(img != null) {
             setIconImage(img);
         }

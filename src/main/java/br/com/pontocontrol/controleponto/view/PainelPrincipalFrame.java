@@ -17,6 +17,7 @@ import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import java.awt.Image;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -45,6 +48,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     
     public static final String ID = "frame-principal";
     public static final String TITULO = "PontoController - Painel Principal";
+    private static final Logger LOG = Logger.getLogger(PainelPrincipalFrame.class.getName());
     
     private FolhaMensalPontoJSON folhaMensal;
     private IFolhaPontoController folhaController;
@@ -53,6 +57,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private int mesSelecionado = Calendar.getInstance().get(Calendar.MONTH);
     private int anoSelecionado = Calendar.getInstance().get(Calendar.YEAR);
     private DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final SimpleDateFormat FORMATO_COMBO_MESES = new SimpleDateFormat("MMMM");
     
     private void init() {
         tableModel = (DefaultTableModel) tabelaRegistros.getModel();
@@ -60,7 +65,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarComboMeses();
         atualizarComboAno();
         cmpUsuario.setText(SessaoManager.getInstance().getUsuarioAutenticado().getLogin());
-        Image img = SessaoManager.getInstance().getImageResource("icon/icon.png");
+        Image img = SessaoManager.getInstance().getImageResource("icon.png");
         if(img != null) {
             setIconImage(img);
         }
@@ -78,7 +83,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         for (Integer mes : meses) {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, mes);
-            String mesFormatado = new SimpleDateFormat("MMMM").format(calendar.getTime());
+            String mesFormatado = FORMATO_COMBO_MESES.format(calendar.getTime());
             defaultComboBoxModel.addElement(mesFormatado);
             if(mesAtual == mes) {
                 defaultComboBoxModel.setSelectedItem(mesFormatado);
@@ -89,8 +94,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     
     private void atualizarComboAno() {
         DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<String>();
-//        List<Integer> anos = getArquivoController().getAvalableFileMonths();
-        List<Integer> anos = new ArrayList<Integer>();
+        List<Integer> anos = getArquivoController().getAvalableYearFolders();
         int anoAtual = Calendar.getInstance().get(Calendar.YEAR);
         if(anos.isEmpty() || !anos.contains(anoAtual)) {
             anos.add(anoAtual);
@@ -233,6 +237,11 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Ano"));
 
         comboAnos.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboAnos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboAnosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -249,6 +258,11 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Mês"));
 
         comboMeses.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboMeses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboMesesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -469,6 +483,24 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private void cmpUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpUsuarioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmpUsuarioActionPerformed
+
+    private void comboAnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboAnosActionPerformed
+        anoSelecionado = Integer.valueOf((String) comboAnos.getSelectedItem());
+        atualizarComboMeses();
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+    }//GEN-LAST:event_comboAnosActionPerformed
+
+    private void comboMesesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMesesActionPerformed
+        String mesStr = (String) comboMeses.getSelectedItem();
+        try {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(FORMATO_COMBO_MESES.parse(mesStr));
+            mesSelecionado = cal.get(Calendar.MONTH);
+        } catch (ParseException ex) {
+            LOG.log(Level.SEVERE, "Erro ao executar parse do valor \"%s\" para uma data válida.", ex);
+        }
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+    }//GEN-LAST:event_comboMesesActionPerformed
 
                                         
 

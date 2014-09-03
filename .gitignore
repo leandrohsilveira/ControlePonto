@@ -36,12 +36,6 @@ Icon
 .Spotlight-V100
 .Trashes
 
-target/classes/.netbeans_automatic_build
-*.class
-*.cpr
-target/ControlePonto-1.0-SNAPSHOT.jar
-target/maven-archiver/pom.properties
-target/test-classes/.netbeans_automatic_build
-/target/
+target/*
 nb-configuration.xml
 nbactions.xml

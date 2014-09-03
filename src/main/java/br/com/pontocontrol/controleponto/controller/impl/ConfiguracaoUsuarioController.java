@@ -40,7 +40,7 @@ public class ConfiguracaoUsuarioController extends ExtObject implements IConfigu
 
     @Override
     public ConfiguracoesUsuarioJSON recuperarConfiguracaoUsuario(String login) {
-        File arquivo = new File(format("%s/%s/%s", mainPath(), login, format(ARQUIVO_CONFIGURACAO_PATTERN, login)));
+        File arquivo = new File(format("%s/%s/%s", projectDataPath(), login, format(ARQUIVO_CONFIGURACAO_PATTERN, login)));
         if(arquivo.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(arquivo));){
                 String conteudo = reader.readLine();
