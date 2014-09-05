@@ -25,20 +25,20 @@ public class FolhaMensalPonto {
     
     private int ano;
     private int mes;
-    private Map<Integer, RegistroDiarioPonto> registros = new TreeMap<Integer, RegistroDiarioPonto>();
+    private Map<Integer, RegistroDiarioPonto> registros = new TreeMap<>();
     
     public Double calcularTotalMensal() {
-        double total = 0d;
-        for (Integer key : registros.keySet()) {
-            RegistroDiarioPonto registroDiarioPonto = registros.get(key);
-            total += registroDiarioPonto.calcularTotalExpedienteAsNumber();
-        }
-        return total;
+        return registros.entrySet().stream().mapToDouble((entry) -> entry.getValue().calcularTotalExpedienteAsNumber()).sum();
     }
 
     public Double calcularVariacaoMensal() {
-        return calcularTotalMensal() - registros.size();
+        return calcularTotalMensal() - calcularTotalMensalEsperado();
     }
+    
+    public long calcularTotalMensalEsperado() {
+        return registros.entrySet().stream().filter((entry) -> entry.getValue().isRegistroDiarioCompleto()).count();
+    }
+    
     public int getAno() {
         return ano;
     }

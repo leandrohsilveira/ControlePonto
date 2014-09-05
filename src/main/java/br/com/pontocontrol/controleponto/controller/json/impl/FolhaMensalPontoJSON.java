@@ -21,7 +21,7 @@ public class FolhaMensalPontoJSON extends BaseJSON<FolhaMensalPonto, FolhaMensal
     
     public int ano;
     public int mes;
-    public Map<Integer, RegistroDiarioPontoJSON> registros = new TreeMap<Integer, RegistroDiarioPontoJSON>();
+    public Map<Integer, RegistroDiarioPontoJSON> registros = new TreeMap<>();
     public double total;
 
     private FolhaMensalPontoJSON() {
@@ -31,9 +31,9 @@ public class FolhaMensalPontoJSON extends BaseJSON<FolhaMensalPonto, FolhaMensal
         ano = model.getAno();
         mes = model.getMes();
         total = model.calcularTotalMensal();
-        for (Integer key : model.getRegistros().keySet()) {
-            registros.put(key, new RegistroDiarioPontoJSON(model.getRegistros().get(key)));
-        }
+        model.getRegistros().entrySet().stream().forEach((entry) -> {
+            registros.put(entry.getKey(), new RegistroDiarioPontoJSON(entry.getValue()));
+        });
     }
     
     public static FolhaMensalPonto toModel(FolhaMensalPontoJSON json) {

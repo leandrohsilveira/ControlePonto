@@ -40,6 +40,10 @@ public class RegistroDiarioPonto {
         }
     }
     
+    public boolean isRegistroDiarioCompleto() {
+        return getEntrada() != null && getAlmoco() != null && getRetorno() != null && getSaida() != null;
+    }
+    
     public void registrarProximo(String timeString) {
         registrarProximo(TimeUtils.toLocalTime(timeString));
     }
