@@ -9,6 +9,7 @@ package br.com.pontocontrol.controleponto.model;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
+import java.util.Calendar;
 
 /**
  *
@@ -38,6 +39,10 @@ public class RegistroDiarioPonto {
         } else {
             setSaida(time);
         }
+    }
+    
+    public boolean contabilizarRegistroDiario() {
+        return isRegistroDiarioCompleto() || Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != dia;
     }
     
     public boolean isRegistroDiarioCompleto() {

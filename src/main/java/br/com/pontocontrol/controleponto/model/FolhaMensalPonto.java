@@ -6,6 +6,7 @@
 
 package br.com.pontocontrol.controleponto.model;
 
+import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,7 +37,11 @@ public class FolhaMensalPonto {
     }
     
     public long calcularTotalMensalEsperado() {
-        return registros.entrySet().stream().filter((entry) -> entry.getValue().isRegistroDiarioCompleto()).count();
+        if(Calendar.getInstance().get(Calendar.MONTH) == mes) {
+            return registros.entrySet().stream().filter((entry) -> entry.getValue().contabilizarRegistroDiario()).count();
+        } else {
+            return registros.entrySet().stream().count();
+        }
     }
     
     public int getAno() {
