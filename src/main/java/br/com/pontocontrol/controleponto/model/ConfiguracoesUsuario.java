@@ -8,6 +8,7 @@ package br.com.pontocontrol.controleponto.model;
 
 import br.com.pontocontrol.controleponto.ExtObject;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
+import java.util.Calendar;
 
 /**
  *
@@ -35,6 +36,32 @@ public class ConfiguracoesUsuario extends ExtObject {
     
     public String getPathUsuario() {
         return format("%s/%s", projectDataPath(), login);
+    }
+    
+    public boolean checarSeDiaExpediente() {
+        return checarSeDiaExpediente(Calendar.getInstance());
+    }
+    
+    public boolean checarSeDiaExpediente(Calendar date) {
+        int dia = date.get(Calendar.DAY_OF_WEEK);
+        switch (dia) {
+            case Calendar.MONDAY:
+                return segunda;
+            case Calendar.TUESDAY:
+                return terca;
+            case Calendar.WEDNESDAY:
+                return quarta;
+            case Calendar.THURSDAY:
+                return quinta;
+            case Calendar.FRIDAY:
+                return sexta;
+            case Calendar.SATURDAY:
+                return sabado;
+            case Calendar.SUNDAY:
+                return domingo;
+            default:
+                return false;
+        }
     }
 
     public String getLogin() {

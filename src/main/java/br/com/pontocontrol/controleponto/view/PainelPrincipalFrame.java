@@ -6,12 +6,13 @@
 
 package br.com.pontocontrol.controleponto.view;
 
-import br.com.pontocontrol.controleponto.ControlePonto;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IArquivoController;
+import br.com.pontocontrol.controleponto.controller.IExportadorXLSController;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.controller.json.impl.FolhaMensalPontoJSON;
+import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import java.awt.Image;
@@ -21,7 +22,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +53,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private FolhaMensalPontoJSON folhaMensal;
     private IFolhaPontoController folhaController;
     private IArquivoController arquivoController;
+    private IExportadorXLSController exportadorController;
     private DefaultTableModel tableModel;
     private int mesSelecionado = Calendar.getInstance().get(Calendar.MONTH);
     private int anoSelecionado = Calendar.getInstance().get(Calendar.YEAR);
@@ -161,6 +162,13 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         return arquivoController;
     }
     
+    private IExportadorXLSController getExportadorController() {
+        if(exportadorController == null) {
+            exportadorController = ControllerFactory.localizar(IExportadorXLSController.class);
+        }
+        return exportadorController;
+    }
+    
     private void atualizarBotoes() {
         btnRemoverRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() > 0);
         btnEditarRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() == 1);
@@ -189,6 +197,8 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         btnRemoverRegistro = new javax.swing.JButton();
         btnEditarRegistro = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        btnExtrairXLS = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(704, 200));
@@ -354,6 +364,28 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addComponent(btnEditarRegistro))
         );
 
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Extrair Registros"));
+
+        btnExtrairXLS.setText("XLS");
+        btnExtrairXLS.setActionCommand("");
+        btnExtrairXLS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExtrairXLSActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnExtrairXLS, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnExtrairXLS)
+        );
+
         javax.swing.GroupLayout painelPrincipalLayout = new javax.swing.GroupLayout(painelPrincipal);
         painelPrincipal.setLayout(painelPrincipalLayout);
         painelPrincipalLayout.setHorizontalGroup(
@@ -374,7 +406,10 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(painelPrincipalLayout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -393,7 +428,9 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -501,6 +538,16 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
     }//GEN-LAST:event_comboMesesActionPerformed
 
+    private void btnExtrairXLSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExtrairXLSActionPerformed
+        final ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
+        if(usuarioAutenticado != null && folhaMensal != null) {
+            boolean ok = getExportadorController().extrair(folhaMensal.toModel(), usuarioAutenticado.getPathUsuario());
+            if(ok) {
+                JOptionPane.showMessageDialog(this, "Folha de Ponto mensal extraída com sucesso!", "Extrair para XLS", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnExtrairXLSActionPerformed
+
                                         
 
     /**
@@ -542,6 +589,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botaoRegistrar;
     private javax.swing.JButton btnEditarRegistro;
+    private javax.swing.JButton btnExtrairXLS;
     private javax.swing.JButton btnRemoverRegistro;
     private javax.swing.JTextField cmpTotalMes;
     private javax.swing.JTextField cmpUsuario;
@@ -551,6 +599,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel painelPrincipal;
     private javax.swing.JTable tabelaRegistros;

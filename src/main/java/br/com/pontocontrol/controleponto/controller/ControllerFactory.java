@@ -8,6 +8,7 @@ package br.com.pontocontrol.controleponto.controller;
 
 import br.com.pontocontrol.controleponto.controller.impl.ArquivoController;
 import br.com.pontocontrol.controleponto.controller.impl.ConfiguracaoUsuarioController;
+import br.com.pontocontrol.controleponto.controller.impl.ExportadorXLSController;
 import br.com.pontocontrol.controleponto.controller.impl.FolhaPontoController;
 import java.util.logging.Logger;
 
@@ -33,6 +34,9 @@ public class ControllerFactory {
             }
             if(controllerInterface.isAssignableFrom(ConfiguracaoUsuarioController.class)) {
                 return (I) ConfiguracaoUsuarioController.getInstance();
+            }
+            if(controllerInterface.isAssignableFrom(ExportadorXLSController.class)) {
+                return (I) ExportadorXLSController.getInstance();
             }
             LOG.severe("Implementação de controle não localizada para a interface informada.");
             return null;
