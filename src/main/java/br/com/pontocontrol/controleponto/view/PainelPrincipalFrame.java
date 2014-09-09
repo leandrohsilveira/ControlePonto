@@ -15,6 +15,7 @@ import br.com.pontocontrol.controleponto.controller.json.impl.FolhaMensalPontoJS
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
+import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.awt.Image;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -24,6 +25,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,14 +75,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         setTitle(TITULO);
     }
     
-    private void atualizarComboMeses() {
+    public void atualizarComboMeses() {
         DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<String>();
         List<Integer> meses = getArquivoController().getAvalableFileMonths(anoSelecionado);
-        int mesAtual = Calendar.getInstance().get(Calendar.MONTH);
-        if(meses.isEmpty() || !meses.contains(mesAtual)) {
+        Calendar cal = Calendar.getInstance();
+        int mesAtual = cal.get(Calendar.MONTH);
+        if(meses.isEmpty() || (!meses.contains(mesAtual) && anoSelecionado == cal.get(Calendar.YEAR))) {
             meses.add(mesAtual);
-            Collections.sort(meses);
         }
+        Collections.sort(meses);
         meses.stream().forEach((mes) -> {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, mes);
@@ -90,17 +93,23 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 defaultComboBoxModel.setSelectedItem(mesFormatado);
             }
         });
+        if(defaultComboBoxModel.getSelectedItem() == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.MONTH, meses.get(0));
+            String mesFormatado = FORMATO_COMBO_MESES.format(calendar.getTime());
+            defaultComboBoxModel.setSelectedItem(mesFormatado);
+        }
         comboMeses.setModel(defaultComboBoxModel);
     }
     
-    private void atualizarComboAno() {
+    public void atualizarComboAno() {
         DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<String>();
         List<Integer> anos = getArquivoController().getAvalableYearFolders();
         int anoAtual = Calendar.getInstance().get(Calendar.YEAR);
         if(anos.isEmpty() || !anos.contains(anoAtual)) {
             anos.add(anoAtual);
-            Collections.sort(anos);
         }
+        Collections.sort(anos);
         anos.stream().forEach((ano) -> {
             defaultComboBoxModel.addElement(ano.toString());
             if(anoAtual == ano) {
@@ -118,12 +127,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     
     public void atualizarTabelaRegistros(int ano, int mes) {
         limparTabela();
+        long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getOffset();
+        long usrExp = usrOffset / TimeUtils.OFFSET_1_HORA;
         folhaMensal = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
         FolhaMensalPonto folha = folhaMensal.toModel();
-        Double totalMensal = folha.calcularTotalMensal();
-        Double totalVariacao = folha.calcularVariacaoMensal();
+        Double totalMensal = folha.calcularTotalMensal() * usrExp;
+        Long totalEsperado = folha.calcularTotalMensalEsperado() * usrExp;
+        Double totalVariacao = folha.calcularVariacaoMensal() * usrExp;
         NumberFormat formater = DecimalFormat.getNumberInstance();
-        cmpTotalMes.setText(formater.format(totalMensal));
+        cmpTotalMes.setText(String.format("%s - %d", formater.format(totalMensal), totalEsperado));
         cmpTotalMes.setToolTipText(String.format("Variação: %s", formater.format(totalVariacao)));
         folha.getRegistros().keySet().stream().map((dia) -> folha.getRegistros().get(dia)).forEach((reg) -> {
             LocalTime totalTime = reg.calcularTotalExpediente();
@@ -132,7 +144,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             String retorno = reg.getRetorno()!= null ? timeFormater.format(reg.getRetorno()) : "Pendente";
             String saida = reg.getSaida()!= null ? timeFormater.format(reg.getSaida()) : "Pendente";
             String total = totalTime != null ? timeFormater.format(totalTime) : "-";
-            String var = totalTime != null ? DecimalFormat.getNumberInstance().format(reg.calcularVariacaoExpediente()) : "-";
+            String var = totalTime != null ? TimeUtils.fromNumberLocalTimeFormatted(reg.calcularVariacaoExpediente(), usrOffset) : "-";
             addRow(tableModel,
                     reg.getDia(),
                     entrada,
@@ -183,6 +195,8 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
         painelPrincipal = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaRegistros = new javax.swing.JTable();
@@ -200,8 +214,10 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         btnExtrairXLS = new javax.swing.JButton();
 
+        jScrollPane2.setViewportView(jEditorPane1);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(704, 200));
+        setMinimumSize(new java.awt.Dimension(800, 400));
         addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 formFocusGained(evt);
@@ -256,7 +272,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(comboAnos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(comboAnos, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -395,42 +411,39 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
-                        .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(painelPrincipalLayout.createSequentialGroup()
-                                .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(painelPrincipalLayout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(painelPrincipalLayout.createSequentialGroup()
+                        .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmpTotalMes, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         painelPrincipalLayout.setVerticalGroup(
             painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelPrincipalLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmpTotalMes, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(painelPrincipalLayout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmpUsuario))))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cmpUsuario))
+                    .addComponent(cmpTotalMes))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -475,6 +488,9 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private void botaoRegistrarregistrarPonto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoRegistrarregistrarPonto
         final Calendar calendar = Calendar.getInstance();
         int dia = calendar.get(Calendar.DAY_OF_MONTH);
+        int mes = calendar.get(Calendar.MONTH);
+        int ano = calendar.get(Calendar.YEAR);
+        folhaMensal = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
         FolhaMensalPonto model = folhaMensal.toModel();
         RegistroDiarioPonto reg = model.getRegistros().get(dia);
         if(reg == null) {
@@ -486,7 +502,11 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             model.getRegistros().put(dia, reg);
         }
         getFolhaPontoController().sincronizar(model);
-        atualizarTabelaRegistros(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH));
+        anoSelecionado = ano;
+        mesSelecionado = mes;
+        atualizarComboAno();
+        atualizarComboMeses();
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
     }//GEN-LAST:event_botaoRegistrarregistrarPonto
 
     private void btnEditarRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarRegistroActionPerformed
@@ -523,6 +543,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private void comboAnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboAnosActionPerformed
         anoSelecionado = Integer.valueOf((String) comboAnos.getSelectedItem());
         atualizarComboMeses();
+        String selItem = (String) comboMeses.getSelectedItem();
+        try {
+            Date dt = FORMATO_COMBO_MESES.parse(selItem);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dt);
+            mesSelecionado = cal.get(Calendar.MONTH);
+        } catch (ParseException ex) {
+            LOG.log(Level.SEVERE, String.format("Padrão de mês \"%s\" desconhecido.", selItem), ex);
+        }
         atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
     }//GEN-LAST:event_comboAnosActionPerformed
 
@@ -595,12 +624,14 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JTextField cmpUsuario;
     private javax.swing.JComboBox comboAnos;
     private javax.swing.JComboBox comboMeses;
+    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel painelPrincipal;
     private javax.swing.JTable tabelaRegistros;
     // End of variables declaration//GEN-END:variables

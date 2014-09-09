@@ -35,6 +35,8 @@ public interface IArquivoController {
     
     File recuperarArquivo(String path, String nome);
     
+    File recuperarArquivo(String path, String nome, boolean criar);
+    
     BufferedWriter getArquivoParaEscrever(File arquivo);
     
     BufferedReader getArquivoParaLer(File arquivo);

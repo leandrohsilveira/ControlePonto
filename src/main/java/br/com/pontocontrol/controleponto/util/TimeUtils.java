@@ -19,10 +19,13 @@ public class TimeUtils extends ExtObject{
         
     public static final String FORMATO_HORA = "HH:mm";
     public static final long OFFSET_1_SEGUNDO = 1l;
-    public static final long OFFSET_1_MINUTO = 60l;
-    public static final long OFFSET_1_HORA = 3600l;
+    public static final long OFFSET_1_MINUTO = OFFSET_1_SEGUNDO * 60;
+    public static final long OFFSET_1_HORA = OFFSET_1_MINUTO * 60;
     public static final long OFFSET_8_HORAS = OFFSET_1_HORA * 8;
     public static final long OFFSET_12_HORAS = OFFSET_1_HORA * 12;
+    public static final long OFFSET_1_DIA = OFFSET_1_HORA * 24;
+    
+    public static final long SYSTEM_DEFAULT_OFFSET = OFFSET_8_HORAS;
     
     public static LocalTime subtrairLocalTimes(final LocalTime base, final LocalTime valor) {
         return base.minusHours(valor.getHour()).minusMinutes(valor.getMinute()).minusSeconds(valor.getSecond()).minusNanos(valor.getNano());

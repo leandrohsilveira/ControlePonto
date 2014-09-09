@@ -72,15 +72,16 @@ public class ArquivoController extends ExtObject implements IArquivoController {
     
     @Override
     public List<Integer> getAvalableYearFolders() {
-        File dir = new File(SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario());
+        String pathUsuario = SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario();
+        File dir = new File(pathUsuario);
         List<Integer> saida = new ArrayList<Integer>();
         if(dir.exists()) {
-            File[] listFiles = dir.listFiles();
-            for (File file : listFiles) {
+            for (String path : dir.list()) {
+                File file = new File(format("%s/%s", pathUsuario, path));
                 if(file.isDirectory()) {
                     final String nomeDir = FilenameUtils.getBaseName(file.getName());
                     final String[] dirSplit = nomeDir.split(ARQUIVO_SPLITTER);
-                    if(dirSplit.length == 2 && PREFIXO_ARQUIVOS.equalsIgnoreCase(dirSplit[0])) {
+                    if(dirSplit.length == 2 && PREFIXO_PASTAS.equalsIgnoreCase(dirSplit[0])) {
                         String anoStr = dirSplit[1];
                         try {
                             saida.add(Integer.valueOf(anoStr));
@@ -141,8 +142,13 @@ public class ArquivoController extends ExtObject implements IArquivoController {
     
     @Override
     public File recuperarArquivo(String path, String nome) {
+        return recuperarArquivo(path, nome, false);
+    }
+
+    @Override
+    public File recuperarArquivo(String path, String nome, boolean criar) {
         File dir = new File(path);
-        if(!dir.exists()) {
+        if(!dir.exists() && criar) {
             dir.mkdirs();
         }
         String diretorioArquivo = format("%s/%s", path, nome);
@@ -151,11 +157,20 @@ public class ArquivoController extends ExtObject implements IArquivoController {
         if(arquivo.exists()) {
             LOG.info(format("Arquivo %s encontrado.", nome));
         } else {
-            LOG.info(format("Arquivo %s não foi encontrado e será criado.", nome));
+            if(criar) {
+                LOG.info(format("Arquivo %s não foi encontrado e será criado.", nome));
+                try {
+                    arquivo.createNewFile();
+                } catch (IOException ex) {
+                    LOG.log(Level.SEVERE, format("Erro ao criar o arquivo \"%s\"", nome), ex);
+                }
+            } else {
+                LOG.info(format("Arquivo %s não foi encontrado.", nome));
+            }
         }
         return arquivo;
     }
-
+    
     @Override
     public BufferedWriter getArquivoParaEscrever(File arquivo) {
         try {

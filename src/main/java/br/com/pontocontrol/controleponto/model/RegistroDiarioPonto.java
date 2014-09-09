@@ -6,6 +6,7 @@
 
 package br.com.pontocontrol.controleponto.model;
 
+import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
@@ -18,7 +19,6 @@ import java.util.Calendar;
 public class RegistroDiarioPonto {
 
     private int dia;
-    private long offset = TimeUtils.OFFSET_8_HORAS;
     
     private LocalTime entrada;
     private LocalTime almoco;
@@ -152,12 +152,12 @@ public class RegistroDiarioPonto {
         this.saida = saida;
     }
 
-    public long getOffset() {
-        return offset;
-    }
-
-    public void setOffset(long offset) {
-        this.offset = offset;
+    private long getOffset() {
+        ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
+        if(usuarioAutenticado != null) {
+            return usuarioAutenticado.getOffset();
+        }
+        return TimeUtils.SYSTEM_DEFAULT_OFFSET;
     }
 
     public int getDia() {

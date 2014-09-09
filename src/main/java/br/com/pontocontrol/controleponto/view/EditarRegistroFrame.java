@@ -9,15 +9,16 @@ package br.com.pontocontrol.controleponto.view;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
+import br.com.pontocontrol.controleponto.controller.json.impl.FolhaMensalPontoJSON;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import br.com.pontocontrol.controleponto.util.SwingUtils;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             calendar.set(Calendar.MONTH, folhaMensal.getMes());
             calendar.set(Calendar.YEAR, folhaMensal.getAno());
         }
-        data = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy").format(calendar.getTime());
+        data = new SimpleDateFormat(DATE_PATTERN).format(calendar.getTime());
         init();
         SessaoManager.getInstance().registrarFrame(ID, this);
     }
@@ -52,40 +53,24 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     public static final String ID = "editar-registro-frame";
     public static final String TITULO = "PontoController - Formulário de Registro";
     private static final String TIME_PATTERN = "HH:mm:ss";
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
     private static final Logger LOG = Logger.getLogger(EditarRegistroFrame.class.getName());
     
     private String data;
     private FolhaMensalPonto folhaMensal;
     private RegistroDiarioPonto registro;
+    //ESTE REGISTRO E APENAS PARA VISUALIZAÇÃO, NÃO USAR PARA SALVAR REGISTROS.
+    private RegistroDiarioPonto regVisualizacao;
     private final DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern(TIME_PATTERN);
     
     private void init() {
-        cmpData.setText(data);
+        regVisualizacao = new RegistroDiarioPonto();
         SwingUtils.setTimeMasks(cmpEntrada, cmpAlmoco, cmpRetorno, cmpSaida);
-        if(registro.getEntrada() != null) {
-            cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
-        }
-        if(registro.getAlmoco()!= null) {
-            cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), TIME_PATTERN));
-        }
-        if(registro.getRetorno()!= null) {
-            cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), TIME_PATTERN));
-        }
-        if(registro.getSaida()!= null) {
-            cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), TIME_PATTERN));
-        }
-        Double totAlmoco = registro.calcularTotalAlmocoAsNumber();
-        Double totExp = registro.calcularTotalExpedienteAsNumber();
-        Double var = registro.calcularVariacaoExpediente();
-        if(totAlmoco > 0) {
-            cmpTotalAlmoco.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totAlmoco, TimeUtils.OFFSET_8_HORAS), totAlmoco));
-        }
-        if(totExp > 0) {
-            cmpTotalExpediente.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totExp, TimeUtils.OFFSET_8_HORAS), totExp));
-        }
-        if(totExp > 0) {
-            cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, TimeUtils.OFFSET_8_HORAS), var));
-        }
+        SwingUtils.setDateMasks(cmpData);
+        
+        cmpData.setText(data);
+        atualizarCampos();
+        atualizarTotais();
         
         Image img = SessaoManager.getInstance().getImageResource("icon.png");
         if(img != null) {
@@ -93,6 +78,54 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         }
         
         setTitle(TITULO);
+    }
+    
+    private void atualizarCampos() {
+        cmpEntrada.setText("");
+        cmpAlmoco.setText("");
+        cmpRetorno.setText("");
+        cmpSaida.setText("");
+        
+        if(registro != null) {
+            if(registro.getEntrada() != null) {
+                cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
+            }
+            if(registro.getAlmoco()!= null) {
+                cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), TIME_PATTERN));
+            }
+            if(registro.getRetorno()!= null) {
+                cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), TIME_PATTERN));
+            }
+            if(registro.getSaida()!= null) {
+                cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), TIME_PATTERN));
+            }
+        }
+    }
+    
+    private void atualizarTotais() {
+        regVisualizacao.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
+        regVisualizacao.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
+        regVisualizacao.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
+        regVisualizacao.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
+        
+        long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getOffset();
+        long usrExp = usrOffset / TimeUtils.OFFSET_1_HORA;
+        Double totAlmoco = regVisualizacao.calcularTotalAlmocoAsNumber();
+        Double totExp = regVisualizacao.calcularTotalExpedienteAsNumber();
+        Double var = regVisualizacao.calcularVariacaoExpediente();
+        
+        cmpTotalAlmoco.setText("-");
+        cmpTotalExpediente.setText("-");
+        cmpTotalVariacao.setText("-");
+        if(totAlmoco > 0) {
+            cmpTotalAlmoco.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totAlmoco, usrOffset), totAlmoco * usrExp));
+        } 
+        if(totExp > 0) {
+            cmpTotalExpediente.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totExp, usrOffset), totExp * usrExp));
+        }
+        if(totExp > 0) {
+            cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, usrOffset), var * usrExp));
+        }
     }
     
     /**
@@ -105,7 +138,6 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        cmpData = new javax.swing.JTextField();
         cmpEntrada = new javax.swing.JFormattedTextField();
         cmpAlmoco = new javax.swing.JFormattedTextField();
         cmpRetorno = new javax.swing.JFormattedTextField();
@@ -116,6 +148,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         cmpTotalVariacao = new javax.swing.JTextField();
         btnCancelar = new javax.swing.JToggleButton();
         btnSalvar = new javax.swing.JToggleButton();
+        cmpData = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -128,11 +161,6 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Formulário de Registro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 24))); // NOI18N
-
-        cmpData.setEditable(false);
-        cmpData.setForeground(new java.awt.Color(204, 204, 204));
-        cmpData.setText("-");
-        cmpData.setBorder(javax.swing.BorderFactory.createTitledBorder("Data"));
 
         cmpEntrada.setBorder(javax.swing.BorderFactory.createTitledBorder("Entrada"));
         cmpEntrada.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -193,6 +221,13 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             }
         });
 
+        cmpData.setBorder(javax.swing.BorderFactory.createTitledBorder("Data"));
+        cmpData.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmpDataFocusLost(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -200,27 +235,29 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(cmpData, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(cmpEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cmpAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmpData)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(cmpRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmpSaida, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                            .addComponent(cmpTotalExpediente))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmpTotalVariacao, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmpTotalAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(cmpEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmpAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(cmpRetorno, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmpSaida, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                                    .addComponent(cmpTotalExpediente))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cmpTotalVariacao, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmpTotalAlmoco, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -285,6 +322,8 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         main.setEnabled(true);
         main.requestFocus();
         main.atualizarTabelaRegistros(folhaMensal.getAno(), folhaMensal.getMes());
+        main.atualizarComboAno();
+        main.atualizarComboMeses();
     }//GEN-LAST:event_formWindowClosed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -292,11 +331,18 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        Date dataValue = SwingUtils.getDateValueFromField(cmpData);
+        if(dataValue == null) {
+            JOptionPane.showMessageDialog(this, "O campo de data é obrigatório!\nPor favor, informe uma data do registro.", "Campo obrigatório", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
         boolean cadastrar = registro == null;
         if(cadastrar) {
             registro = new RegistroDiarioPonto();
-            registro.setDia(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dataValue);
+            registro.setDia(cal.get(Calendar.DAY_OF_MONTH));
         }
         
         registro.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
@@ -304,29 +350,65 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
         registro.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
         registro.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
         if(cadastrar) {
+            if(folhaMensal == null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(dataValue);
+                folhaMensal = new FolhaMensalPonto(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
+            }
             folhaMensal.getRegistros().put(registro.getDia(), registro);
         }
         getFolhaPontoController().sincronizar(folhaMensal);
-        JOptionPane.showMessageDialog(this, String.format("O registro do dia %s foi atualizado com sucesso.", data), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, String.format("O registro do dia %s foi atualizado com sucesso.", cmpData.getText()), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         
         fecharJanela();
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void cmpEntradaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpEntradaFocusLost
-        SwingUtils.validateDateFields(cmpEntrada);
+        SwingUtils.validateTimeFields(cmpEntrada);
+        atualizarTotais();
     }//GEN-LAST:event_cmpEntradaFocusLost
 
     private void cmpAlmocoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpAlmocoFocusLost
-        SwingUtils.validateDateFields(cmpAlmoco);
+        SwingUtils.validateTimeFields(cmpAlmoco);
+        atualizarTotais();
     }//GEN-LAST:event_cmpAlmocoFocusLost
 
     private void cmpRetornoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpRetornoFocusLost
-        SwingUtils.validateDateFields(cmpRetorno);
+        SwingUtils.validateTimeFields(cmpRetorno);
+        atualizarTotais();
     }//GEN-LAST:event_cmpRetornoFocusLost
 
     private void cmpSaidaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpSaidaFocusLost
-        SwingUtils.validateDateFields(cmpSaida);
+        SwingUtils.validateTimeFields(cmpSaida);
+        atualizarTotais();
     }//GEN-LAST:event_cmpSaidaFocusLost
+
+    private void cmpDataFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpDataFocusLost
+        SwingUtils.validateDateFields(cmpData);
+        Date dt = SwingUtils.getDateValueFromField(cmpData);
+        if(dt != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dt);
+            int dia = cal.get(Calendar.DAY_OF_MONTH);
+            int mes = cal.get(Calendar.MONTH);
+            int ano = cal.get(Calendar.YEAR);
+            FolhaMensalPontoJSON folha = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
+            if(folha != null) {
+                folhaMensal = folha.toModel();
+                registro = folhaMensal.getRegistros().get(dia);
+            } else {
+                folhaMensal = null;
+                registro = null;
+            }
+            if(registro != null) {
+                regVisualizacao = registro;
+            } else {
+                regVisualizacao = new RegistroDiarioPonto();
+            }
+        }
+        atualizarCampos();
+        atualizarTotais();
+    }//GEN-LAST:event_cmpDataFocusLost
 
     /**
      * @param args the command line arguments
@@ -368,7 +450,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnCancelar;
     private javax.swing.JToggleButton btnSalvar;
     private javax.swing.JFormattedTextField cmpAlmoco;
-    private javax.swing.JTextField cmpData;
+    private javax.swing.JFormattedTextField cmpData;
     private javax.swing.JFormattedTextField cmpEntrada;
     private javax.swing.JFormattedTextField cmpRetorno;
     private javax.swing.JFormattedTextField cmpSaida;

@@ -57,10 +57,7 @@ public class FolhaPontoController extends ExtObject implements IFolhaPontoContro
                 cont.fecharArquivoLeitura(reader);
                 return FolhaMensalPontoJSON.fromJSONStr(conteudo);
             } else {
-                BufferedWriter writer = cont.getArquivoParaEscrever(arquivo);
-                FolhaMensalPontoJSON model = new FolhaMensalPontoJSON(new FolhaMensalPonto(getAnoAtual(), mes));
-                writer.write(model.toJSON());
-                cont.salvarArquivo(writer);
+                FolhaMensalPontoJSON model = new FolhaMensalPontoJSON(new FolhaMensalPonto(ano, mes));
                 return model;
             }
         } catch (IOException ex) {
@@ -88,7 +85,7 @@ public class FolhaPontoController extends ExtObject implements IFolhaPontoContro
 
     @Override
     public void sincronizar(FolhaMensalPontoJSON json) {
-        File arquivo = getArquivoController().recuperarArquivo(getArquivoController().getYearPath(json.ano), getArquivoController().getMonthFile(json.mes));
+        File arquivo = getArquivoController().recuperarArquivo(getArquivoController().getYearPath(json.ano), getArquivoController().getMonthFile(json.mes), true);
         try (BufferedWriter writer = getArquivoController().getArquivoParaEscrever(arquivo);){
             writer.write(json.toJSON());
             getArquivoController().salvarArquivo(writer);
