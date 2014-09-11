@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,15 +26,27 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SwingUtils {
     
-    private static final String TIME_PATTERN = "HH:mm:ss";
-    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private static final String TIME_PATTERN_A = "HH:mm:ss";
+    private static final String TIME_PATTERN_B = "HH:mm";
+    private static final String TIME_PATTERN_C = "HH";
+    
+    private static final String DATE_PATTERN_A = "dd/MM/yyyy";
+    private static final String DATE_PATTERN_B = "dd/MM";
+    private static final String DATE_PATTERN_C = "dd";
+    
     private static final Logger LOG = Logger.getLogger(SwingUtils.class.getName());
+    
     private static final String TIME_MASK = "##:##:##";
     private static final String DATE_MASK = "##/##/####";
     
-    private static final SimpleDateFormat SIMPLE_DATE_FORMATTER = new SimpleDateFormat(DATE_PATTERN);
-    private static final SimpleDateFormat SIMPLE_TIME_FORMATTER = new SimpleDateFormat(TIME_PATTERN);
-    private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
+    private static final SimpleDateFormat SIMPLE_DATE_FORMATTER_A = new SimpleDateFormat(DATE_PATTERN_A);
+    private static final SimpleDateFormat SIMPLE_TIME_FORMATTER_A = new SimpleDateFormat(TIME_PATTERN_A);
+    private static final SimpleDateFormat SIMPLE_DATE_FORMATTER_B = new SimpleDateFormat(DATE_PATTERN_B);
+    private static final SimpleDateFormat SIMPLE_TIME_FORMATTER_B = new SimpleDateFormat(TIME_PATTERN_B);
+    private static final SimpleDateFormat SIMPLE_DATE_FORMATTER_C = new SimpleDateFormat(DATE_PATTERN_C);
+    private static final SimpleDateFormat SIMPLE_TIME_FORMATTER_C = new SimpleDateFormat(TIME_PATTERN_C);
+    
+    private static final DateTimeFormatter LOCAL_TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN_A);
     
     public static void setTimeMask(JFormattedTextField field) {
         setMask(field, TIME_MASK);
@@ -62,28 +75,62 @@ public class SwingUtils {
             setMask(field, mask);
         }
     }
+     public static void validateField(SimpleDateFormat formatter, JTextField field) throws ParseException {
+        String valor = field.getText();
+        if(StringUtils.isNotBlank(valor)) {
+            Date date = formatter.parse(valor);
+            field.setText(formatter.format(date));
+        }
+     }
     
-     public static void validateFields(SimpleDateFormat formatter, JTextField... fields) {
+    public static void validateDateFields(JTextField... fields) {
         for (JTextField field : fields) {
+            Calendar dataDoCampo = null;
+            Calendar dataSaida = Calendar.getInstance();
             try {
-                String valor = field.getText();
-                if(StringUtils.isNotBlank(valor)) {
-                    Date date = formatter.parse(valor);
-                    field.setText(formatter.format(date));
-                }
+                dataSaida = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_A, field);
             } catch (ParseException ex) {
+                try {
+                    dataDoCampo = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_B, field);
+                    dataSaida.set(Calendar.DAY_OF_MONTH, dataDoCampo.get(Calendar.DAY_OF_MONTH));
+                    dataSaida.set(Calendar.MONTH, dataDoCampo.get(Calendar.MONTH));
+                } catch (ParseException ex1) {
+                    try {
+                        dataDoCampo = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_C, field);
+                        dataSaida.set(Calendar.DAY_OF_MONTH, dataDoCampo.get(Calendar.DAY_OF_MONTH));
+                    } catch (ParseException ex2) {}
+                }
+            }
+            if(dataDoCampo != null) {
+                String valTxt = SIMPLE_DATE_FORMATTER_A.format(dataSaida.getTime());
+                field.setText(valTxt);
+            } else {
                 field.setText("");
             }
-            
         }
     }
     
-    public static void validateDateFields(JTextField... fields) {
-        validateFields(SIMPLE_DATE_FORMATTER, fields);
-    }
-    
     public static void validateTimeFields(JTextField... fields) {
-        validateFields(SIMPLE_TIME_FORMATTER, fields);
+        for (JTextField field : fields) {
+            Calendar dataSaida = null;
+            try {
+                dataSaida = getCalendarValueFromField(SIMPLE_TIME_FORMATTER_A, field);
+            } catch (ParseException ex) {
+                try {
+                    dataSaida = getCalendarValueFromField(SIMPLE_TIME_FORMATTER_B, field);
+                } catch (ParseException ex1) {
+                    try {
+                        dataSaida = getCalendarValueFromField(SIMPLE_TIME_FORMATTER_C, field);
+                    } catch (ParseException ex2) {}
+                }
+            }
+            if(dataSaida != null) {
+                String valTxt = SIMPLE_TIME_FORMATTER_A.format(dataSaida.getTime());
+                field.setText(valTxt);
+            } else {
+                field.setText("");
+            }
+        }
     }
     
     public static LocalTime getLocalTimeValueFromField(JTextField field) {
@@ -100,10 +147,24 @@ public class SwingUtils {
         String value = field.getText();
         if(StringUtils.isNotBlank(value)) {
             try {
-                return SIMPLE_DATE_FORMATTER.parse(value);
+                return getDateValueFromField(SIMPLE_DATE_FORMATTER_A, field);
             } catch (ParseException e) {}
         }
         return null;
+    }
+    
+    public static Date getDateValueFromField(SimpleDateFormat formatter, JTextField field) throws ParseException {
+        String value = field.getText();
+        if(StringUtils.isNotBlank(value)) {
+            return formatter.parse(value);
+        }
+        return null;
+    }
+    
+    public static Calendar getCalendarValueFromField(SimpleDateFormat formatter, JTextField field) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getDateValueFromField(formatter, field));
+        return cal;
     }
     
 }

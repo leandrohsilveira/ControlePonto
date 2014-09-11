@@ -59,7 +59,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private DefaultTableModel tableModel;
     private int mesSelecionado = Calendar.getInstance().get(Calendar.MONTH);
     private int anoSelecionado = Calendar.getInstance().get(Calendar.YEAR);
-    private DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final SimpleDateFormat FORMATO_COMBO_MESES = new SimpleDateFormat("MMMM");
     
     private void init() {
@@ -76,7 +76,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }
     
     public void atualizarComboMeses() {
-        DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<String>();
+        DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<>();
         List<Integer> meses = getArquivoController().getAvalableFileMonths(anoSelecionado);
         Calendar cal = Calendar.getInstance();
         int mesAtual = cal.get(Calendar.MONTH);
@@ -103,7 +103,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }
     
     public void atualizarComboAno() {
-        DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<String>();
+        DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<>();
         List<Integer> anos = getArquivoController().getAvalableYearFolders();
         int anoAtual = Calendar.getInstance().get(Calendar.YEAR);
         if(anos.isEmpty() || !anos.contains(anoAtual)) {
@@ -139,11 +139,11 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         cmpTotalMes.setToolTipText(String.format("Variação: %s", formater.format(totalVariacao)));
         folha.getRegistros().keySet().stream().map((dia) -> folha.getRegistros().get(dia)).forEach((reg) -> {
             LocalTime totalTime = reg.calcularTotalExpediente();
-            String entrada = reg.getEntrada() != null ? timeFormater.format(reg.getEntrada()) : "Pendente";
-            String almoco = reg.getAlmoco()!= null ? timeFormater.format(reg.getAlmoco()) : "Pendente";
-            String retorno = reg.getRetorno()!= null ? timeFormater.format(reg.getRetorno()) : "Pendente";
-            String saida = reg.getSaida()!= null ? timeFormater.format(reg.getSaida()) : "Pendente";
-            String total = totalTime != null ? timeFormater.format(totalTime) : "-";
+            String entrada = reg.getEntrada() != null ? TIME_FORMATTER.format(reg.getEntrada()) : "Pendente";
+            String almoco = reg.getAlmoco()!= null ? TIME_FORMATTER.format(reg.getAlmoco()) : "Pendente";
+            String retorno = reg.getRetorno()!= null ? TIME_FORMATTER.format(reg.getRetorno()) : "Pendente";
+            String saida = reg.getSaida()!= null ? TIME_FORMATTER.format(reg.getSaida()) : "Pendente";
+            String total = totalTime != null ? TIME_FORMATTER.format(totalTime) : "-";
             String var = totalTime != null ? TimeUtils.fromNumberLocalTimeFormatted(reg.calcularVariacaoExpediente(), usrOffset) : "-";
             addRow(tableModel,
                     reg.getDia(),
@@ -184,6 +184,113 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     private void atualizarBotoes() {
         btnRemoverRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() > 0);
         btnEditarRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() == 1);
+        menuBtnRemoverRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() > 0);
+        menuBtnEditarRegistro.setEnabled(tabelaRegistros.getSelectedRowCount() == 1);
+    }
+    
+    //** CRUD ACTIONS
+    private void doNovo() {
+        final EditarRegistroFrame janelaEditar = new EditarRegistroFrame();
+        janelaEditar.setVisible(true);
+        this.setEnabled(false);
+        atualizarBotoes();
+    }
+    
+    private void doEditar() {
+        if(tabelaRegistros.getSelectedColumnCount() == 1) {
+            Integer dia = (Integer) tabelaRegistros.getValueAt(tabelaRegistros.getSelectedRow(), 0);
+            if(folhaMensal.registros.containsKey(dia)) {
+                final EditarRegistroFrame janelaEditar = new EditarRegistroFrame(dia, folhaMensal.toModel());
+                janelaEditar.setVisible(true);
+                this.setEnabled(false);
+            }
+        }
+        atualizarBotoes();
+    }
+    
+    private void doRemover() {
+        if(tabelaRegistros.getSelectedRowCount() > 0) {
+            int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja remover os registros selecionados?", "Remover registros", JOptionPane.YES_NO_OPTION);
+            if(JOptionPane.OK_OPTION == confirm) {
+                FolhaMensalPonto model = folhaMensal.toModel();
+                for (Integer index : tabelaRegistros.getSelectedRows()) {
+                    Integer dia = (Integer) tableModel.getValueAt(index, 0);
+                    if (model.getRegistros().containsKey(dia)) {
+                        model.getRegistros().remove(dia);
+                    }
+                }
+                getFolhaPontoController().sincronizar(model);
+                atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+            }
+        }
+        atualizarBotoes();
+    }
+    
+    private void doExtrairXLS() {
+        final ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
+        if(usuarioAutenticado != null && folhaMensal != null) {
+            boolean ok = getExportadorController().extrair(folhaMensal.toModel(), usuarioAutenticado.getPathUsuario());
+            if(ok) {
+                JOptionPane.showMessageDialog(this, "Folha de Ponto mensal extraída com sucesso!", "Extrair para XLS", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Ocorreu um problema ao extrair os registros para o formato XLS!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        atualizarBotoes();
+    }
+    
+    private void doRegistrarAgora() {
+        final Calendar calendar = Calendar.getInstance();
+        int dia = calendar.get(Calendar.DAY_OF_MONTH);
+        int mes = calendar.get(Calendar.MONTH);
+        int ano = calendar.get(Calendar.YEAR);
+        folhaMensal = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
+        FolhaMensalPonto model = folhaMensal.toModel();
+        RegistroDiarioPonto reg = model.getRegistros().get(dia);
+        if(reg == null) {
+            reg = new RegistroDiarioPonto();
+            reg.setDia(dia);
+        }
+        reg.registrarProximoAgora();
+        if(!model.getRegistros().containsKey(dia)) {
+            model.getRegistros().put(dia, reg);
+        }
+        getFolhaPontoController().sincronizar(model);
+        anoSelecionado = ano;
+        mesSelecionado = mes;
+        atualizarComboAno();
+        atualizarComboMeses();
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        atualizarBotoes();
+    }
+    
+    private void doAlterarMes() {
+        String mesStr = (String) comboMeses.getSelectedItem();
+        try {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(FORMATO_COMBO_MESES.parse(mesStr));
+            mesSelecionado = cal.get(Calendar.MONTH);
+        } catch (ParseException ex) {
+            LOG.log(Level.SEVERE, "Erro ao executar parse do valor \"%s\" para uma data válida.", ex);
+        }
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        atualizarBotoes();
+    }
+    
+    private void doAlterarAno() {
+        anoSelecionado = Integer.valueOf((String) comboAnos.getSelectedItem());
+        atualizarComboMeses();
+        String selItem = (String) comboMeses.getSelectedItem();
+        try {
+            Date dt = FORMATO_COMBO_MESES.parse(selItem);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dt);
+            mesSelecionado = cal.get(Calendar.MONTH);
+        } catch (ParseException ex) {
+            LOG.log(Level.SEVERE, String.format("Padrão de mês \"%s\" desconhecido.", selItem), ex);
+        }
+        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        atualizarBotoes();
     }
 
     /**
@@ -200,19 +307,29 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         painelPrincipal = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelaRegistros = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
+        painelBordaComboAno = new javax.swing.JPanel();
         comboAnos = new javax.swing.JComboBox();
-        jPanel3 = new javax.swing.JPanel();
+        painelBordaComboMes = new javax.swing.JPanel();
         comboMeses = new javax.swing.JComboBox();
-        jPanel4 = new javax.swing.JPanel();
+        painelBordaBtnAgora = new javax.swing.JPanel();
         botaoRegistrar = new javax.swing.JButton();
         cmpTotalMes = new javax.swing.JTextField();
         cmpUsuario = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
+        painelBordaBotoesTabela = new javax.swing.JPanel();
         btnRemoverRegistro = new javax.swing.JButton();
         btnEditarRegistro = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
-        btnExtrairXLS = new javax.swing.JButton();
+        btnNovoRegistro = new javax.swing.JButton();
+        barraMenu = new javax.swing.JMenuBar();
+        menuUsuario = new javax.swing.JMenu();
+        menuBtnLogoff = new javax.swing.JMenuItem();
+        menuBtnSair = new javax.swing.JMenuItem();
+        menuRegistros = new javax.swing.JMenu();
+        menuBtnRegistrarAgora = new javax.swing.JMenuItem();
+        menuBtnNovoRegistro = new javax.swing.JMenuItem();
+        menuBtnEditarRegistro = new javax.swing.JMenuItem();
+        menuBtnRemoverRegistro = new javax.swing.JMenuItem();
+        submenuExportar = new javax.swing.JMenu();
+        menuBtnExportarXLS = new javax.swing.JMenuItem();
 
         jScrollPane2.setViewportView(jEditorPane1);
 
@@ -258,8 +375,8 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tabelaRegistros);
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Ano"));
+        painelBordaComboAno.setBackground(new java.awt.Color(255, 255, 255));
+        painelBordaComboAno.setBorder(javax.swing.BorderFactory.createTitledBorder("Ano"));
 
         comboAnos.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         comboAnos.addActionListener(new java.awt.event.ActionListener() {
@@ -268,19 +385,19 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout painelBordaComboAnoLayout = new javax.swing.GroupLayout(painelBordaComboAno);
+        painelBordaComboAno.setLayout(painelBordaComboAnoLayout);
+        painelBordaComboAnoLayout.setHorizontalGroup(
+            painelBordaComboAnoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(comboAnos, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        painelBordaComboAnoLayout.setVerticalGroup(
+            painelBordaComboAnoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(comboAnos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Mês"));
+        painelBordaComboMes.setBackground(new java.awt.Color(255, 255, 255));
+        painelBordaComboMes.setBorder(javax.swing.BorderFactory.createTitledBorder("Mês"));
 
         comboMeses.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         comboMeses.addActionListener(new java.awt.event.ActionListener() {
@@ -289,21 +406,21 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout painelBordaComboMesLayout = new javax.swing.GroupLayout(painelBordaComboMes);
+        painelBordaComboMes.setLayout(painelBordaComboMesLayout);
+        painelBordaComboMesLayout.setHorizontalGroup(
+            painelBordaComboMesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(comboMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        painelBordaComboMesLayout.setVerticalGroup(
+            painelBordaComboMesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelBordaComboMesLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(comboMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Agora"));
+        painelBordaBtnAgora.setBackground(new java.awt.Color(255, 255, 255));
+        painelBordaBtnAgora.setBorder(javax.swing.BorderFactory.createTitledBorder("Agora"));
 
         botaoRegistrar.setText("Registrar Ponto");
         botaoRegistrar.addActionListener(new java.awt.event.ActionListener() {
@@ -312,15 +429,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout painelBordaBtnAgoraLayout = new javax.swing.GroupLayout(painelBordaBtnAgora);
+        painelBordaBtnAgora.setLayout(painelBordaBtnAgoraLayout);
+        painelBordaBtnAgoraLayout.setHorizontalGroup(
+            painelBordaBtnAgoraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(botaoRegistrar, javax.swing.GroupLayout.Alignment.TRAILING)
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        painelBordaBtnAgoraLayout.setVerticalGroup(
+            painelBordaBtnAgoraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelBordaBtnAgoraLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(botaoRegistrar))
         );
@@ -344,8 +461,8 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Ações na tabela"));
+        painelBordaBotoesTabela.setBackground(new java.awt.Color(255, 255, 255));
+        painelBordaBotoesTabela.setBorder(javax.swing.BorderFactory.createTitledBorder("Ações na tabela"));
 
         btnRemoverRegistro.setText("Remover Registro");
         btnRemoverRegistro.setEnabled(false);
@@ -364,42 +481,31 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        btnNovoRegistro.setText("Novo Registro");
+        btnNovoRegistro.setToolTipText("Cadastrar um novo registro");
+        btnNovoRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNovoRegistroActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout painelBordaBotoesTabelaLayout = new javax.swing.GroupLayout(painelBordaBotoesTabela);
+        painelBordaBotoesTabela.setLayout(painelBordaBotoesTabelaLayout);
+        painelBordaBotoesTabelaLayout.setHorizontalGroup(
+            painelBordaBotoesTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelBordaBotoesTabelaLayout.createSequentialGroup()
+                .addComponent(btnNovoRegistro)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnEditarRegistro)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRemoverRegistro))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        painelBordaBotoesTabelaLayout.setVerticalGroup(
+            painelBordaBotoesTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(painelBordaBotoesTabelaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btnRemoverRegistro)
-                .addComponent(btnEditarRegistro))
-        );
-
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Extrair Registros"));
-
-        btnExtrairXLS.setText("XLS");
-        btnExtrairXLS.setActionCommand("");
-        btnExtrairXLS.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExtrairXLSActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnExtrairXLS, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnExtrairXLS)
+                .addComponent(btnEditarRegistro)
+                .addComponent(btnNovoRegistro))
         );
 
         javax.swing.GroupLayout painelPrincipalLayout = new javax.swing.GroupLayout(painelPrincipal);
@@ -411,18 +517,16 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(painelBordaBtnAgora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(painelBordaBotoesTabela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(painelPrincipalLayout.createSequentialGroup()
                         .addComponent(cmpUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(painelBordaComboAno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(painelBordaComboMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmpTotalMes, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -432,19 +536,101 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             .addGroup(painelPrincipalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cmpUsuario))
+                    .addComponent(painelBordaComboMes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(painelBordaComboAno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cmpUsuario)
                     .addComponent(cmpTotalMes))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(painelBordaBotoesTabela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(painelBordaBtnAgora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
+
+        menuUsuario.setText("Usuário");
+
+        menuBtnLogoff.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnLogoff.setText("Logoff");
+        menuBtnLogoff.setToolTipText("Função atualmente indisponível.");
+        menuBtnLogoff.setEnabled(false);
+        menuBtnLogoff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnLogoffActionPerformed(evt);
+            }
+        });
+        menuUsuario.add(menuBtnLogoff);
+
+        menuBtnSair.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnSair.setText("Sair");
+        menuBtnSair.setToolTipText("Sair do sistema");
+        menuBtnSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnSairActionPerformed(evt);
+            }
+        });
+        menuUsuario.add(menuBtnSair);
+
+        barraMenu.add(menuUsuario);
+
+        menuRegistros.setText("Registros");
+
+        menuBtnRegistrarAgora.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, 0));
+        menuBtnRegistrarAgora.setText("Registrar Agora");
+        menuBtnRegistrarAgora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnRegistrarAgoraActionPerformed(evt);
+            }
+        });
+        menuRegistros.add(menuBtnRegistrarAgora);
+
+        menuBtnNovoRegistro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnNovoRegistro.setText("Novo");
+        menuBtnNovoRegistro.setToolTipText("");
+        menuBtnNovoRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnNovoRegistroActionPerformed(evt);
+            }
+        });
+        menuRegistros.add(menuBtnNovoRegistro);
+
+        menuBtnEditarRegistro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnEditarRegistro.setText("Editar");
+        menuBtnEditarRegistro.setEnabled(false);
+        menuBtnEditarRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnEditarRegistroActionPerformed(evt);
+            }
+        });
+        menuRegistros.add(menuBtnEditarRegistro);
+
+        menuBtnRemoverRegistro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnRemoverRegistro.setText("Remover");
+        menuBtnRemoverRegistro.setToolTipText("");
+        menuBtnRemoverRegistro.setEnabled(false);
+        menuBtnRemoverRegistro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnRemoverRegistroActionPerformed(evt);
+            }
+        });
+        menuRegistros.add(menuBtnRemoverRegistro);
+
+        submenuExportar.setText("Exportar");
+
+        menuBtnExportarXLS.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        menuBtnExportarXLS.setText("Planilha XLS (Office)");
+        menuBtnExportarXLS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuBtnExportarXLSActionPerformed(evt);
+            }
+        });
+        submenuExportar.add(menuBtnExportarXLS);
+
+        menuRegistros.add(submenuExportar);
+
+        barraMenu.add(menuRegistros);
+
+        setJMenuBar(barraMenu);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -454,7 +640,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(painelPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(painelPrincipal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -469,55 +655,15 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void btnRemoverRegistroActionPerformed2(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverRegistroActionPerformed2
-        if(tabelaRegistros.getSelectedRowCount() > 0) {
-            int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja remover os registros selecionados?", "Remover registros", JOptionPane.YES_NO_OPTION);
-            if(JOptionPane.OK_OPTION == confirm) {
-                FolhaMensalPonto model = folhaMensal.toModel();
-                for (Integer index : tabelaRegistros.getSelectedRows()) {
-                    Integer dia = (Integer) tableModel.getValueAt(index, 0);
-                    if (model.getRegistros().containsKey(dia)) {
-                        model.getRegistros().remove(dia);
-                    }
-                }
-                getFolhaPontoController().sincronizar(model);
-                atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
-            }
-        }
+        doRemover();
     }//GEN-LAST:event_btnRemoverRegistroActionPerformed2
 
     private void botaoRegistrarregistrarPonto(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoRegistrarregistrarPonto
-        final Calendar calendar = Calendar.getInstance();
-        int dia = calendar.get(Calendar.DAY_OF_MONTH);
-        int mes = calendar.get(Calendar.MONTH);
-        int ano = calendar.get(Calendar.YEAR);
-        folhaMensal = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
-        FolhaMensalPonto model = folhaMensal.toModel();
-        RegistroDiarioPonto reg = model.getRegistros().get(dia);
-        if(reg == null) {
-            reg = new RegistroDiarioPonto();
-            reg.setDia(dia);
-        }
-        reg.registrarProximoAgora();
-        if(!model.getRegistros().containsKey(dia)) {
-            model.getRegistros().put(dia, reg);
-        }
-        getFolhaPontoController().sincronizar(model);
-        anoSelecionado = ano;
-        mesSelecionado = mes;
-        atualizarComboAno();
-        atualizarComboMeses();
-        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        doRegistrarAgora();
     }//GEN-LAST:event_botaoRegistrarregistrarPonto
 
     private void btnEditarRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarRegistroActionPerformed
-        if(tabelaRegistros.getSelectedColumnCount() == 1) {
-            Integer dia = (Integer) tabelaRegistros.getValueAt(tabelaRegistros.getSelectedRow(), 0);
-            if(folhaMensal.registros.containsKey(dia)) {
-                final EditarRegistroFrame janelaEditar = new EditarRegistroFrame(dia, folhaMensal.toModel());
-                janelaEditar.setVisible(true);
-                this.setEnabled(false);
-            }
-        }
+        doEditar();
     }//GEN-LAST:event_btnEditarRegistroActionPerformed
 
     private void cmpTotalMesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmpTotalMesActionPerformed
@@ -541,41 +687,46 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cmpUsuarioActionPerformed
 
     private void comboAnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboAnosActionPerformed
-        anoSelecionado = Integer.valueOf((String) comboAnos.getSelectedItem());
-        atualizarComboMeses();
-        String selItem = (String) comboMeses.getSelectedItem();
-        try {
-            Date dt = FORMATO_COMBO_MESES.parse(selItem);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dt);
-            mesSelecionado = cal.get(Calendar.MONTH);
-        } catch (ParseException ex) {
-            LOG.log(Level.SEVERE, String.format("Padrão de mês \"%s\" desconhecido.", selItem), ex);
-        }
-        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        doAlterarAno();
     }//GEN-LAST:event_comboAnosActionPerformed
 
     private void comboMesesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMesesActionPerformed
-        String mesStr = (String) comboMeses.getSelectedItem();
-        try {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(FORMATO_COMBO_MESES.parse(mesStr));
-            mesSelecionado = cal.get(Calendar.MONTH);
-        } catch (ParseException ex) {
-            LOG.log(Level.SEVERE, "Erro ao executar parse do valor \"%s\" para uma data válida.", ex);
-        }
-        atualizarTabelaRegistros(anoSelecionado, mesSelecionado);
+        doAlterarMes();
     }//GEN-LAST:event_comboMesesActionPerformed
 
-    private void btnExtrairXLSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExtrairXLSActionPerformed
-        final ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
-        if(usuarioAutenticado != null && folhaMensal != null) {
-            boolean ok = getExportadorController().extrair(folhaMensal.toModel(), usuarioAutenticado.getPathUsuario());
-            if(ok) {
-                JOptionPane.showMessageDialog(this, "Folha de Ponto mensal extraída com sucesso!", "Extrair para XLS", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_btnExtrairXLSActionPerformed
+    private void menuBtnNovoRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnNovoRegistroActionPerformed
+        doNovo();
+    }//GEN-LAST:event_menuBtnNovoRegistroActionPerformed
+
+    private void menuBtnLogoffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnLogoffActionPerformed
+        JOptionPane.showMessageDialog(this, "Função atualmente indisponível!", "Função indisponível", JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_menuBtnLogoffActionPerformed
+
+    private void menuBtnEditarRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnEditarRegistroActionPerformed
+        doEditar();
+    }//GEN-LAST:event_menuBtnEditarRegistroActionPerformed
+
+    private void menuBtnRemoverRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnRemoverRegistroActionPerformed
+        doRemover();
+    }//GEN-LAST:event_menuBtnRemoverRegistroActionPerformed
+
+    private void menuBtnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnSairActionPerformed
+        dispose();
+        invalidate();
+        System.exit(0);
+    }//GEN-LAST:event_menuBtnSairActionPerformed
+
+    private void menuBtnRegistrarAgoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnRegistrarAgoraActionPerformed
+        doRegistrarAgora();
+    }//GEN-LAST:event_menuBtnRegistrarAgoraActionPerformed
+
+    private void btnNovoRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoRegistroActionPerformed
+        doNovo();
+    }//GEN-LAST:event_btnNovoRegistroActionPerformed
+
+    private void menuBtnExportarXLSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnExportarXLSActionPerformed
+        doExtrairXLS();
+    }//GEN-LAST:event_menuBtnExportarXLSActionPerformed
 
                                         
 
@@ -616,23 +767,33 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar barraMenu;
     private javax.swing.JButton botaoRegistrar;
     private javax.swing.JButton btnEditarRegistro;
-    private javax.swing.JButton btnExtrairXLS;
+    private javax.swing.JButton btnNovoRegistro;
     private javax.swing.JButton btnRemoverRegistro;
     private javax.swing.JTextField cmpTotalMes;
     private javax.swing.JTextField cmpUsuario;
     private javax.swing.JComboBox comboAnos;
     private javax.swing.JComboBox comboMeses;
     private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JMenuItem menuBtnEditarRegistro;
+    private javax.swing.JMenuItem menuBtnExportarXLS;
+    private javax.swing.JMenuItem menuBtnLogoff;
+    private javax.swing.JMenuItem menuBtnNovoRegistro;
+    private javax.swing.JMenuItem menuBtnRegistrarAgora;
+    private javax.swing.JMenuItem menuBtnRemoverRegistro;
+    private javax.swing.JMenuItem menuBtnSair;
+    private javax.swing.JMenu menuRegistros;
+    private javax.swing.JMenu menuUsuario;
+    private javax.swing.JPanel painelBordaBotoesTabela;
+    private javax.swing.JPanel painelBordaBtnAgora;
+    private javax.swing.JPanel painelBordaComboAno;
+    private javax.swing.JPanel painelBordaComboMes;
     private javax.swing.JPanel painelPrincipal;
+    private javax.swing.JMenu submenuExportar;
     private javax.swing.JTable tabelaRegistros;
     // End of variables declaration//GEN-END:variables
 }
