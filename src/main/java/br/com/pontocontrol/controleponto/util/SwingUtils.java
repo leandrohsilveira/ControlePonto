@@ -88,7 +88,8 @@ public class SwingUtils {
             Calendar dataDoCampo = null;
             Calendar dataSaida = Calendar.getInstance();
             try {
-                dataSaida = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_A, field);
+                dataDoCampo = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_A, field);
+                dataSaida = dataDoCampo;
             } catch (ParseException ex) {
                 try {
                     dataDoCampo = getCalendarValueFromField(SIMPLE_DATE_FORMATTER_B, field);
