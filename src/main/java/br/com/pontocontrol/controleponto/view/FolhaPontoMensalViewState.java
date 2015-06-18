@@ -10,6 +10,7 @@ import br.com.pontocontrol.controleponto.controller.ControllerFactory;
 import br.com.pontocontrol.controleponto.controller.IExportadorXLSController;
 import br.com.pontocontrol.controleponto.controller.IFolhaPontoController;
 import br.com.pontocontrol.controleponto.controller.json.impl.FolhaMensalPontoJSON;
+import br.com.pontocontrol.controleponto.event.Evento;
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.model.FolhaMensalPonto;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
@@ -41,6 +42,9 @@ public class FolhaPontoMensalViewState {
    private Double totalMensal;
    private Double variacaoMensal;
    private long totalEsperadoMensal;
+
+   private Evento fazerDepoisRegistrarAgora;
+   private Evento fazerDepoisRemoverRegistro;
 
    public FolhaPontoMensalViewState() {
       carregarFolhaMensal();
@@ -119,6 +123,9 @@ public class FolhaPontoMensalViewState {
       RegistroDiarioPonto removido = folhaMensal.getRegistros().remove(dia);
       folhaPontocontroller.sincronizar(folhaMensal);
       carregarFolhaMensal();
+      if (fazerDepoisRemoverRegistro != null) {
+         fazerDepoisRemoverRegistro.executarEvento(removido != null);
+      }
       return removido != null;
    }
 
@@ -136,6 +143,17 @@ public class FolhaPontoMensalViewState {
       folhaMensal.getRegistros().putIfAbsent(dia, registroDoDia);
       folhaPontocontroller.sincronizar(folhaMensal);
       carregarFolhaMensal();
+      if (fazerDepoisRegistrarAgora != null) {
+         fazerDepoisRegistrarAgora.executarEvento(true);
+      }
+   }
+
+   public void setFazerDepoisRegistrarAgora(Evento fazerDepoisRegistrarAgora) {
+      this.fazerDepoisRegistrarAgora = fazerDepoisRegistrarAgora;
+   }
+
+   public void setFazerDepoisRemoverRegistro(Evento fazerDepoisRemoverRegistro) {
+      this.fazerDepoisRemoverRegistro = fazerDepoisRemoverRegistro;
    }
 
 }

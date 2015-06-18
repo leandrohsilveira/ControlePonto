@@ -40,8 +40,8 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
    private FolhaPontoMensalViewState folhaPontoMensalViewState;
 
    private void init() {
+      configurarViewState();
       tableModel = (DefaultTableModel) tabelaRegistros.getModel();
-      folhaPontoMensalViewState = new FolhaPontoMensalViewState();
       atualizarValores();
       cmpUsuario.setText(SessaoManager.getInstance().getUsuarioAutenticado().getLogin());
       Image img = SessaoManager.getInstance().getImageResource("icon.png");
@@ -49,6 +49,24 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
          setIconImage(img);
       }
       setTitle(TITULO);
+   }
+
+   private void configurarViewState() {
+      folhaPontoMensalViewState = new FolhaPontoMensalViewState();
+      folhaPontoMensalViewState.setFazerDepoisRegistrarAgora((sucesso) -> {
+         folhaPontoMensalViewState.mesAtual();
+         atualizarValores();
+         atualizarBotoes();
+      });
+      folhaPontoMensalViewState.setFazerDepoisRemoverRegistro((sucesso) -> {
+         atualizarValores();
+         atualizarBotoes();
+         if (sucesso) {
+            JOptionPane.showMessageDialog(this, "O Registro foi removido com sucesso.", "Registro removido", JOptionPane.INFORMATION_MESSAGE);
+         } else {
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro ao excluir o Registro selecionado.", "Registro NÃO removido", JOptionPane.ERROR_MESSAGE);
+         }
+      });
    }
 
    private void limparTabela() {
@@ -125,11 +143,9 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
             for (Integer index : tabelaRegistros.getSelectedRows()) {
                Integer dia = (Integer) tableModel.getValueAt(index, 0);
                folhaPontoMensalViewState.removerRegistroDiario(dia);
-               atualizarValores();
             }
          }
       }
-      atualizarBotoes();
    }
 
    private void doExtrairXLS() {
@@ -144,9 +160,6 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
    private void doRegistrarAgora() {
       folhaPontoMensalViewState.registrarAgora();
-      folhaPontoMensalViewState.mesAtual();
-      atualizarValores();
-      atualizarBotoes();
    }
 
    /**
