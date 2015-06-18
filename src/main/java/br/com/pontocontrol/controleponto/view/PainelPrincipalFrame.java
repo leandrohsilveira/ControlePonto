@@ -144,6 +144,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
    private void doRegistrarAgora() {
       folhaPontoMensalViewState.registrarAgora();
+      folhaPontoMensalViewState.mesAtual();
       atualizarValores();
       atualizarBotoes();
    }
@@ -416,11 +417,10 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
          painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(painelPrincipalLayout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(cmpTotalMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addComponent(cmpUsuario, javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(painelPeriodo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(painelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+               .addComponent(cmpUsuario, javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(painelPeriodo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+               .addComponent(cmpTotalMes))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
