@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package br.com.pontocontrol.controleponto.view;
 
 import br.com.pontocontrol.controleponto.SessaoManager;
@@ -16,7 +15,6 @@ import br.com.pontocontrol.controleponto.util.SwingUtils;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -29,188 +27,200 @@ import org.apache.commons.lang.StringUtils;
  */
 public class EditarRegistroFrame extends javax.swing.JFrame {
 
-    public EditarRegistroFrame() {
-        this(null, null);
-    }
+   public EditarRegistroFrame() {
+      this(Calendar.getInstance(), null);
+   }
 
-    public EditarRegistroFrame(Integer dia, FolhaMensalPonto folhaMensal) {
-        initComponents();
-        this.folhaMensal = folhaMensal;
-        Calendar calendar = Calendar.getInstance();
-        if(dia != null) {
-            calendar.set(Calendar.DAY_OF_MONTH, dia);
-            this.registro = this.folhaMensal.getRegistros().get(dia);
-        }
-        if(folhaMensal != null) {
-            calendar.set(Calendar.MONTH, folhaMensal.getMes());
-            calendar.set(Calendar.YEAR, folhaMensal.getAno());
-            data = new SimpleDateFormat(DATE_PATTERN).format(calendar.getTime());
-        }
-        init();
-        SessaoManager.getInstance().registrarFrame(ID, this);
-    }
-    
-    public static final String ID = "editar-registro-frame";
-    public static final String TITULO = "PontoController - Formulário de Registro";
-    private static final String TIME_PATTERN = "HH:mm:ss";
-    private static final String DATE_PATTERN = "dd/MM/yyyy";
-    private static final Logger LOG = Logger.getLogger(EditarRegistroFrame.class.getName());
-    
-    private String data;
-    private FolhaMensalPonto folhaMensal;
-    private RegistroDiarioPonto registro;
-    //ESTE REGISTRO E APENAS PARA VISUALIZAÇÃO, NÃO USAR PARA SALVAR REGISTROS.
-    private RegistroDiarioPonto regVisualizacao;
-    private IFolhaPontoController folhaPontoController;
-    
-    private void init() {
-        regVisualizacao = new RegistroDiarioPonto();
-        SwingUtils.setTimeMasks(cmpEntrada, cmpAlmoco, cmpRetorno, cmpSaida);
-        SwingUtils.setDateMasks(cmpData);
-        
-        if(StringUtils.isNotBlank(data)) {
-            cmpData.setText(data);
-        }
-        atualizarCampos();
-        atualizarTotais();
-        
-        Image img = SessaoManager.getInstance().getImageResource("icon.png");
-        if(img != null) {
-            setIconImage(img);
-        }
-        
-        setTitle(TITULO);
-    }
-    
-    
-    private IFolhaPontoController getFolhaPontoController() {
-        if(folhaPontoController == null) {
-            folhaPontoController = ControllerFactory.localizar(IFolhaPontoController.class);
-        }
-        return folhaPontoController;
-    }
-    
-    private void fecharJanela() {
-        this.setVisible(false);
-        formWindowClosed(null);
-        this.invalidate();
-    }
-    
-    
-    private void atualizarCampos() {
-        cmpEntrada.setText("");
-        cmpAlmoco.setText("");
-        cmpRetorno.setText("");
-        cmpSaida.setText("");
-        
-        if(registro != null) {
-            if(registro.getEntrada() != null) {
-                cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
-            }
-            if(registro.getAlmoco()!= null) {
-                cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), TIME_PATTERN));
-            }
-            if(registro.getRetorno()!= null) {
-                cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), TIME_PATTERN));
-            }
-            if(registro.getSaida()!= null) {
-                cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), TIME_PATTERN));
-            }
-        }
-    }
-    
-    private void atualizarTotais() {
-        regVisualizacao.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
-        regVisualizacao.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
-        regVisualizacao.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
-        regVisualizacao.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
-        
-        long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getOffset();
-        long usrExp = usrOffset / TimeUtils.OFFSET_1_HORA;
-        Double totAlmoco = regVisualizacao.calcularTotalAlmocoAsNumber();
-        Double totExp = regVisualizacao.calcularTotalExpedienteAsNumber();
-        Double var = regVisualizacao.calcularVariacaoExpediente();
-        
-        cmpTotalAlmoco.setText("-");
-        cmpTotalExpediente.setText("-");
-        cmpTotalVariacao.setText("-");
-        if(totAlmoco > 0) {
-            cmpTotalAlmoco.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totAlmoco, usrOffset), totAlmoco * usrExp));
-        } 
-        if(totExp > 0) {
-            cmpTotalExpediente.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totExp, usrOffset), totExp * usrExp));
-        }
-        if(totExp > 0) {
-            cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, usrOffset), var * usrExp));
-        }
-    }
-    
-    private void doSalvar() {
-        Date dataValue = SwingUtils.getDateValueFromField(cmpData);
-        if(dataValue == null) {
-            JOptionPane.showMessageDialog(this, "O campo de data é obrigatório!\nPor favor, informe uma data do registro.", "Campo obrigatório", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        boolean cadastrar = registro == null;
-        if(cadastrar) {
-            registro = new RegistroDiarioPonto();
+   public EditarRegistroFrame(Calendar data, RegistroDiarioPonto registro) {
+      initComponents();
+      this.registro = registro;
+      this.data = new SimpleDateFormat(DATE_PATTERN).format(data.getTime());
+      int mes = data.get(Calendar.MONTH);
+      int ano = data.get(Calendar.YEAR);
+      FolhaMensalPontoJSON json = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
+      if (json != null) {
+         folhaMensal = json.toModel();
+      }
+      init();
+   }
+
+   @Deprecated
+   public EditarRegistroFrame(Integer dia, FolhaMensalPonto folhaMensal) {
+      initComponents();
+      this.folhaMensal = folhaMensal;
+      Calendar calendar = Calendar.getInstance();
+      if (dia != null) {
+         calendar.set(Calendar.DAY_OF_MONTH, dia);
+         this.registro = this.folhaMensal.getRegistros().get(dia);
+      }
+      if (folhaMensal != null) {
+         calendar.set(Calendar.MONTH, folhaMensal.getMes());
+         calendar.set(Calendar.YEAR, folhaMensal.getAno());
+         data = new SimpleDateFormat(DATE_PATTERN).format(calendar.getTime());
+      }
+      init();
+      SessaoManager.getInstance().registrarFrame(ID, this);
+   }
+
+   public static final String ID = "editar-registro-frame";
+   public static final String TITULO = "PontoController - Formulário de Registro";
+   private static final String TIME_PATTERN = "HH:mm:ss";
+   private static final String DATE_PATTERN = "dd/MM/yyyy";
+   private static final Logger LOG = Logger.getLogger(EditarRegistroFrame.class.getName());
+
+   private String data;
+   private FolhaMensalPonto folhaMensal;
+   private RegistroDiarioPonto registro;
+   //ESTE REGISTRO E APENAS PARA VISUALIZAÇÃO, NÃO USAR PARA SALVAR REGISTROS.
+   private RegistroDiarioPonto regVisualizacao;
+   private IFolhaPontoController folhaPontoController;
+
+   private void init() {
+      regVisualizacao = new RegistroDiarioPonto();
+      SwingUtils.setTimeMasks(cmpEntrada, cmpAlmoco, cmpRetorno, cmpSaida);
+      SwingUtils.setDateMasks(cmpData);
+
+      if (StringUtils.isNotBlank(data)) {
+         cmpData.setText(data);
+      }
+      atualizarCampos();
+      atualizarTotais();
+
+      Image img = SessaoManager.getInstance().getImageResource("icon.png");
+      if (img != null) {
+         setIconImage(img);
+      }
+
+      setTitle(TITULO);
+   }
+
+   private IFolhaPontoController getFolhaPontoController() {
+      if (folhaPontoController == null) {
+         folhaPontoController = ControllerFactory.localizar(IFolhaPontoController.class);
+      }
+      return folhaPontoController;
+   }
+
+   private void fecharJanela() {
+      this.setVisible(false);
+      formWindowClosed(null);
+      this.invalidate();
+   }
+
+   private void atualizarCampos() {
+      cmpEntrada.setText("");
+      cmpAlmoco.setText("");
+      cmpRetorno.setText("");
+      cmpSaida.setText("");
+
+      if (registro != null) {
+         if (registro.getEntrada() != null) {
+            cmpEntrada.setText(TimeUtils.fromLocalTime(registro.getEntrada(), TIME_PATTERN));
+         }
+         if (registro.getAlmoco() != null) {
+            cmpAlmoco.setText(TimeUtils.fromLocalTime(registro.getAlmoco(), TIME_PATTERN));
+         }
+         if (registro.getRetorno() != null) {
+            cmpRetorno.setText(TimeUtils.fromLocalTime(registro.getRetorno(), TIME_PATTERN));
+         }
+         if (registro.getSaida() != null) {
+            cmpSaida.setText(TimeUtils.fromLocalTime(registro.getSaida(), TIME_PATTERN));
+         }
+      }
+   }
+
+   private void atualizarTotais() {
+      regVisualizacao.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
+      regVisualizacao.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
+      regVisualizacao.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
+      regVisualizacao.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
+
+      long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getOffset();
+      long usrExp = usrOffset / TimeUtils.OFFSET_1_HORA;
+      Double totAlmoco = regVisualizacao.calcularTotalAlmocoAsNumber();
+      Double totExp = regVisualizacao.calcularTotalExpedienteAsNumber();
+      Double var = regVisualizacao.calcularVariacaoExpediente();
+
+      cmpTotalAlmoco.setText("-");
+      cmpTotalExpediente.setText("-");
+      cmpTotalVariacao.setText("-");
+      if (totAlmoco > 0) {
+         cmpTotalAlmoco.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totAlmoco, usrOffset), totAlmoco * usrExp));
+      }
+      if (totExp > 0) {
+         cmpTotalExpediente.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(totExp, usrOffset), totExp * usrExp));
+      }
+      if (totExp > 0) {
+         cmpTotalVariacao.setText(String.format("%s (%.3f)", TimeUtils.fromNumberLocalTimeFormatted(var, usrOffset), var * usrExp));
+      }
+   }
+
+   private void doSalvar() {
+      Date dataValue = SwingUtils.getDateValueFromField(cmpData);
+      if (dataValue == null) {
+         JOptionPane.showMessageDialog(this, "O campo de data é obrigatório!\nPor favor, informe uma data do registro.", "Campo obrigatório", JOptionPane.ERROR_MESSAGE);
+         return;
+      }
+
+      boolean cadastrar = registro == null;
+      if (cadastrar) {
+         registro = new RegistroDiarioPonto();
+         Calendar cal = Calendar.getInstance();
+         cal.setTime(dataValue);
+         registro.setDia(cal.get(Calendar.DAY_OF_MONTH));
+      }
+
+      registro.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
+      registro.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
+      registro.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
+      registro.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
+      if (cadastrar) {
+         if (folhaMensal == null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(dataValue);
-            registro.setDia(cal.get(Calendar.DAY_OF_MONTH));
-        }
-        
-        registro.setEntrada(SwingUtils.getLocalTimeValueFromField(cmpEntrada));
-        registro.setAlmoco(SwingUtils.getLocalTimeValueFromField(cmpAlmoco));
-        registro.setRetorno(SwingUtils.getLocalTimeValueFromField(cmpRetorno));
-        registro.setSaida(SwingUtils.getLocalTimeValueFromField(cmpSaida));
-        if(cadastrar) {
-            if(folhaMensal == null) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(dataValue);
-                folhaMensal = new FolhaMensalPonto(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
-            }
-            folhaMensal.getRegistros().put(registro.getDia(), registro);
-        }
-        getFolhaPontoController().sincronizar(folhaMensal);
-        JOptionPane.showMessageDialog(this, String.format("O registro do dia %s foi atualizado com sucesso.", cmpData.getText()), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        
-        fecharJanela();
-    }
-    
-    private void doAltararData() {
-        SwingUtils.validateDateFields(cmpData);
-        Date dt = SwingUtils.getDateValueFromField(cmpData);
-        if(dt != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dt);
-            int dia = cal.get(Calendar.DAY_OF_MONTH);
-            int mes = cal.get(Calendar.MONTH);
-            int ano = cal.get(Calendar.YEAR);
-            FolhaMensalPontoJSON folha = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
-            if(folha != null) {
-                folhaMensal = folha.toModel();
-                registro = folhaMensal.getRegistros().get(dia);
-            } else {
-                folhaMensal = null;
-                registro = null;
-            }
-            if(registro != null) {
-                regVisualizacao = registro;
-            } else {
-                regVisualizacao = new RegistroDiarioPonto();
-            }
-        }
-        atualizarCampos();
-        atualizarTotais();
-    }
-    
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+            folhaMensal = new FolhaMensalPonto(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
+         }
+         folhaMensal.getRegistros().put(registro.getDia(), registro);
+      }
+      getFolhaPontoController().sincronizar(folhaMensal);
+      JOptionPane.showMessageDialog(this, String.format("O registro do dia %s foi atualizado com sucesso.", cmpData.getText()), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+      fecharJanela();
+   }
+
+   private void doAltararData() {
+      SwingUtils.validateDateFields(cmpData);
+      Date dt = SwingUtils.getDateValueFromField(cmpData);
+      if (dt != null) {
+         Calendar cal = Calendar.getInstance();
+         cal.setTime(dt);
+         int dia = cal.get(Calendar.DAY_OF_MONTH);
+         int mes = cal.get(Calendar.MONTH);
+         int ano = cal.get(Calendar.YEAR);
+         FolhaMensalPontoJSON folha = getFolhaPontoController().recuperarFolhaMensal(ano, mes);
+         if (folha != null) {
+            folhaMensal = folha.toModel();
+            registro = folhaMensal.getRegistros().get(dia);
+         } else {
+            folhaMensal = null;
+            registro = null;
+         }
+         if (registro != null) {
+            regVisualizacao = registro;
+         } else {
+            regVisualizacao = new RegistroDiarioPonto();
+         }
+      }
+      atualizarCampos();
+      atualizarTotais();
+   }
+
+   /**
+    * This method is called from within the constructor to initialize the form.
+    * WARNING: Do NOT modify this code. The content of this method is always
+    * regenerated by the Form Editor.
+    */
+   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -410,92 +420,95 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        SessaoManager.getInstance().apagarFrame(ID);
-        PainelPrincipalFrame main = (PainelPrincipalFrame) SessaoManager.getInstance().getFrame(PainelPrincipalFrame.ID);
-        main.setEnabled(true);
-        main.requestFocus();
-        if(folhaMensal != null) {
-            main.atualizarTabelaRegistros(folhaMensal.getAno(), folhaMensal.getMes());
-        }
-        main.atualizarComboAno();
-        main.atualizarComboMeses();
+      SessaoManager.getInstance().apagarFrame(ID);
+      PainelPrincipalFrame main = (PainelPrincipalFrame) SessaoManager.getInstance().getFrame(PainelPrincipalFrame.ID);
+      main.setEnabled(true);
+      main.requestFocus();
+      main.atualizarValores();
     }//GEN-LAST:event_formWindowClosed
 
     private void cmpEntradaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpEntradaFocusLost
-        SwingUtils.validateTimeFields(cmpEntrada);
-        atualizarTotais();
+      SwingUtils.validateTimeFields(cmpEntrada);
+      atualizarTotais();
     }//GEN-LAST:event_cmpEntradaFocusLost
 
     private void cmpAlmocoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpAlmocoFocusLost
-        SwingUtils.validateTimeFields(cmpAlmoco);
-        atualizarTotais();
+      SwingUtils.validateTimeFields(cmpAlmoco);
+      atualizarTotais();
     }//GEN-LAST:event_cmpAlmocoFocusLost
 
     private void cmpRetornoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpRetornoFocusLost
-        SwingUtils.validateTimeFields(cmpRetorno);
-        atualizarTotais();
+      SwingUtils.validateTimeFields(cmpRetorno);
+      atualizarTotais();
     }//GEN-LAST:event_cmpRetornoFocusLost
 
     private void cmpSaidaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpSaidaFocusLost
-        SwingUtils.validateTimeFields(cmpSaida);
-        atualizarTotais();
+      SwingUtils.validateTimeFields(cmpSaida);
+      atualizarTotais();
     }//GEN-LAST:event_cmpSaidaFocusLost
 
     private void cmpDataFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmpDataFocusLost
-        doAltararData();
+      doAltararData();
     }//GEN-LAST:event_cmpDataFocusLost
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        doSalvar();
+      doSalvar();
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        fecharJanela();
+      fecharJanela();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void menuBtnSalvarRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnSalvarRegistroActionPerformed
-        doSalvar();
+      doSalvar();
     }//GEN-LAST:event_menuBtnSalvarRegistroActionPerformed
 
     private void menuBtnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBtnCancelarActionPerformed
-        fecharJanela();
+      fecharJanela();
     }//GEN-LAST:event_menuBtnCancelarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+   /**
+    * @param args the command line arguments
+    */
+   public static void main(String args[]) {
+      /*
+       * Set the Nimbus look and feel
+       */
+      //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /*
+       * If Nimbus (introduced in Java SE 6) is not available, stay with the
+       * default look and feel.
+       * For details see
+       * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+       */
+      try {
+         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+               javax.swing.UIManager.setLookAndFeel(info.getClassName());
+               break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+         }
+      } catch (ClassNotFoundException ex) {
+         java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (InstantiationException ex) {
+         java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+         java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+         java.util.logging.Logger.getLogger(EditarRegistroFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      }
+      //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                EditarRegistroFrame frame = new EditarRegistroFrame();
-                frame.setVisible(true);
-            }
-        });
-    }
+      /*
+       * Create and display the form
+       */
+      java.awt.EventQueue.invokeLater(new Runnable() {
+         public void run() {
+            EditarRegistroFrame frame = new EditarRegistroFrame();
+            frame.setVisible(true);
+         }
+      });
+   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
@@ -516,11 +529,11 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
     private javax.swing.JMenu menuRegistro;
     // End of variables declaration//GEN-END:variables
 
-    public FolhaMensalPonto getFolhaMensal() {
-        return folhaMensal;
-    }
+   public FolhaMensalPonto getFolhaMensal() {
+      return folhaMensal;
+   }
 
-    public void setFolhaMensal(FolhaMensalPonto folhaMensal) {
-        this.folhaMensal = folhaMensal;
-    }
+   public void setFolhaMensal(FolhaMensalPonto folhaMensal) {
+      this.folhaMensal = folhaMensal;
+   }
 }
