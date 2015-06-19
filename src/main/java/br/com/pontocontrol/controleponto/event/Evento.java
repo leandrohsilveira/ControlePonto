@@ -11,6 +11,6 @@ package br.com.pontocontrol.controleponto.event;
  */
 public interface Evento {
 
-   void executarEvento(boolean sucesso);
+   void iniciar();
 
 }
