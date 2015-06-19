@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package br.com.pontocontrol.controleponto.model;
 
 import br.com.pontocontrol.controleponto.ExtObject;
@@ -16,126 +15,133 @@ import java.util.Calendar;
  */
 public class ConfiguracoesUsuario extends ExtObject {
 
-    public ConfiguracoesUsuario(String login) {
-        this.login = login;
-    }
-    
-    //login e user path.
-    private String login;
-    
-    //Expediente
-    private boolean segunda = true;
-    private boolean terca = true;
-    private boolean quarta = true;
-    private boolean quinta = true;
-    private boolean sexta = true;
-    private boolean sabado = false;
-    private boolean domingo = false;
-    
-    private long offset = TimeUtils.OFFSET_8_HORAS;
-    
-    public String getPathUsuario() {
-        return format("%s/%s", projectDataPath(), login);
-    }
-    
-    public boolean checarSeDiaExpediente() {
-        return checarSeDiaExpediente(Calendar.getInstance());
-    }
-    
-    public boolean checarSeDiaExpediente(Calendar date) {
-        int dia = date.get(Calendar.DAY_OF_WEEK);
-        switch (dia) {
-            case Calendar.MONDAY:
-                return segunda;
-            case Calendar.TUESDAY:
-                return terca;
-            case Calendar.WEDNESDAY:
-                return quarta;
-            case Calendar.THURSDAY:
-                return quinta;
-            case Calendar.FRIDAY:
-                return sexta;
-            case Calendar.SATURDAY:
-                return sabado;
-            case Calendar.SUNDAY:
-                return domingo;
-            default:
-                return false;
-        }
-    }
+   public ConfiguracoesUsuario(String login) {
+      this.login = login;
+   }
 
-    public String getLogin() {
-        return login;
-    }
+   //login e user path.
+   private String login;
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
+   //Expediente
+   private boolean segunda = true;
+   private boolean terca = true;
+   private boolean quarta = true;
+   private boolean quinta = true;
+   private boolean sexta = true;
+   private boolean sabado = false;
+   private boolean domingo = false;
 
-    public boolean isSegunda() {
-        return segunda;
-    }
+   private long offset = TimeUtils.SYSTEM_DEFAULT_OFFSET;
+   private long almoco = TimeUtils.OFFSET_1_HORA;
 
-    public void setSegunda(boolean segunda) {
-        this.segunda = segunda;
-    }
+   public String getPathUsuario() {
+      return format("%s/%s", projectDataPath(), login);
+   }
 
-    public boolean isTerca() {
-        return terca;
-    }
+   public boolean checarSeDiaExpediente() {
+      return checarSeDiaExpediente(Calendar.getInstance());
+   }
 
-    public void setTerca(boolean terca) {
-        this.terca = terca;
-    }
+   public boolean checarSeDiaExpediente(Calendar date) {
+      int dia = date.get(Calendar.DAY_OF_WEEK);
+      switch (dia) {
+         case Calendar.MONDAY:
+            return segunda;
+         case Calendar.TUESDAY:
+            return terca;
+         case Calendar.WEDNESDAY:
+            return quarta;
+         case Calendar.THURSDAY:
+            return quinta;
+         case Calendar.FRIDAY:
+            return sexta;
+         case Calendar.SATURDAY:
+            return sabado;
+         case Calendar.SUNDAY:
+            return domingo;
+         default:
+            return false;
+      }
+   }
 
-    public boolean isQuarta() {
-        return quarta;
-    }
+   public String getLogin() {
+      return login;
+   }
 
-    public void setQuarta(boolean quarta) {
-        this.quarta = quarta;
-    }
+   public void setLogin(String login) {
+      this.login = login;
+   }
 
-    public boolean isQuinta() {
-        return quinta;
-    }
+   public boolean isSegunda() {
+      return segunda;
+   }
 
-    public void setQuinta(boolean quinta) {
-        this.quinta = quinta;
-    }
+   public void setSegunda(boolean segunda) {
+      this.segunda = segunda;
+   }
 
-    public boolean isSexta() {
-        return sexta;
-    }
+   public boolean isTerca() {
+      return terca;
+   }
 
-    public void setSexta(boolean sexta) {
-        this.sexta = sexta;
-    }
+   public void setTerca(boolean terca) {
+      this.terca = terca;
+   }
 
-    public boolean isSabado() {
-        return sabado;
-    }
+   public boolean isQuarta() {
+      return quarta;
+   }
 
-    public void setSabado(boolean sabado) {
-        this.sabado = sabado;
-    }
+   public void setQuarta(boolean quarta) {
+      this.quarta = quarta;
+   }
 
-    public boolean isDomingo() {
-        return domingo;
-    }
+   public boolean isQuinta() {
+      return quinta;
+   }
 
-    public void setDomingo(boolean domingo) {
-        this.domingo = domingo;
-    }
+   public void setQuinta(boolean quinta) {
+      this.quinta = quinta;
+   }
 
-    public long getOffset() {
-        return offset;
-    }
+   public boolean isSexta() {
+      return sexta;
+   }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
-    }
-    
-    
-    
+   public void setSexta(boolean sexta) {
+      this.sexta = sexta;
+   }
+
+   public boolean isSabado() {
+      return sabado;
+   }
+
+   public void setSabado(boolean sabado) {
+      this.sabado = sabado;
+   }
+
+   public boolean isDomingo() {
+      return domingo;
+   }
+
+   public void setDomingo(boolean domingo) {
+      this.domingo = domingo;
+   }
+
+   public long getExpediente() {
+      return offset;
+   }
+
+   public void setOffset(long offset) {
+      this.offset = offset;
+   }
+
+   public long getAlmoco() {
+      return almoco;
+   }
+
+   public void setAlmoco(long almoco) {
+      this.almoco = almoco;
+   }
+
 }

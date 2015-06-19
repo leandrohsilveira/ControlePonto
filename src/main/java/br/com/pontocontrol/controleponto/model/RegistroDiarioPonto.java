@@ -161,7 +161,7 @@ public class RegistroDiarioPonto {
    private long getOffset() {
       ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
       if (usuarioAutenticado != null) {
-         return usuarioAutenticado.getOffset();
+         return usuarioAutenticado.getExpediente();
       }
       return TimeUtils.SYSTEM_DEFAULT_OFFSET;
    }

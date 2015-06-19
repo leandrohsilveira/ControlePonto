@@ -7,7 +7,7 @@
 package br.com.pontocontrol.controleponto;
 
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
-import br.com.pontocontrol.controleponto.view.PainelPrincipalFrame;
+import br.com.pontocontrol.controleponto.swing.PainelPrincipalFrame;
 import java.awt.Image;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
