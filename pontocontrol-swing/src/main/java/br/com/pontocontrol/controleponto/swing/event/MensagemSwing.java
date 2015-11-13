@@ -5,9 +5,11 @@
  */
 package br.com.pontocontrol.controleponto.swing.event;
 
-import br.com.pontocontrol.controleponto.event.Mensagem;
 import java.awt.Component;
+
 import javax.swing.JOptionPane;
+
+import br.com.pontocontrol.controleponto.event.Mensagem;
 
 /**
  *

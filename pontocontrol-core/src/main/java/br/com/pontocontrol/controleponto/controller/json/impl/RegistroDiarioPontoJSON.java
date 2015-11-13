@@ -6,10 +6,11 @@
 
 package br.com.pontocontrol.controleponto.controller.json.impl;
 
-import br.com.pontocontrol.controleponto.controller.json.BaseJSON;
-import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+
+import br.com.pontocontrol.controleponto.controller.json.BaseJSON;
+import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 
 /**
  *

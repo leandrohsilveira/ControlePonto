@@ -6,6 +6,7 @@
 package br.com.pontocontrol.controleponto.swing.event;
 
 import java.awt.Component;
+
 import javax.swing.JOptionPane;
 
 /**

@@ -5,10 +5,11 @@
  */
 package br.com.pontocontrol.controleponto.model;
 
-import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.util.Calendar;
+
+import br.com.pontocontrol.controleponto.util.TimeUtils;
 
 /**
  *

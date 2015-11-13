@@ -5,12 +5,6 @@
  */
 package br.com.pontocontrol.controleponto.controller.impl;
 
-import br.com.pontocontrol.controleponto.ExtObject;
-import br.com.pontocontrol.controleponto.PathsManager;
-import br.com.pontocontrol.controleponto.controller.IConfiguracaoUsuarioController;
-import br.com.pontocontrol.controleponto.controller.json.impl.ConfiguracoesUsuarioJSON;
-import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
-import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,6 +12,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.gson.Gson;
+
+import br.com.pontocontrol.controleponto.ExtObject;
+import br.com.pontocontrol.controleponto.PathsManager;
+import br.com.pontocontrol.controleponto.controller.IConfiguracaoUsuarioController;
+import br.com.pontocontrol.controleponto.controller.json.impl.ConfiguracoesUsuarioJSON;
+import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 
 /**
  *

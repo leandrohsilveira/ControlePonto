@@ -5,10 +5,11 @@
  */
 package br.com.pontocontrol.controleponto.swing;
 
+import java.awt.Image;
+
 import br.com.pontocontrol.controleponto.FrameManager;
 import br.com.pontocontrol.controleponto.swing.util.SwingUtils;
 import br.com.pontocontrol.controleponto.view.PontoControlViewState;
-import java.awt.Image;
 
 /**
  *

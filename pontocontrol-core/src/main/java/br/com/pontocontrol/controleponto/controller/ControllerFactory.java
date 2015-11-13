@@ -6,11 +6,12 @@
 
 package br.com.pontocontrol.controleponto.controller;
 
+import java.util.logging.Logger;
+
 import br.com.pontocontrol.controleponto.controller.impl.ArquivoController;
 import br.com.pontocontrol.controleponto.controller.impl.ConfiguracaoUsuarioController;
 import br.com.pontocontrol.controleponto.controller.impl.ExportadorXLSController;
 import br.com.pontocontrol.controleponto.controller.impl.FolhaPontoController;
-import java.util.logging.Logger;
 
 /**
  *

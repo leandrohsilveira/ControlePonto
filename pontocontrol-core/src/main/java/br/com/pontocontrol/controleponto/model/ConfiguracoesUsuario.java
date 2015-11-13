@@ -5,10 +5,11 @@
  */
 package br.com.pontocontrol.controleponto.model;
 
+import java.util.Calendar;
+
 import br.com.pontocontrol.controleponto.ExtObject;
 import br.com.pontocontrol.controleponto.PathsManager;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
-import java.util.Calendar;
 
 /**
  *

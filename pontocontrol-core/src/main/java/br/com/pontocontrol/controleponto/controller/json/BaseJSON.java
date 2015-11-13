@@ -6,9 +6,11 @@
 
 package br.com.pontocontrol.controleponto.controller.json;
 
-import br.com.pontocontrol.controleponto.ExtObject;
-import com.google.gson.Gson;
 import java.io.Serializable;
+
+import com.google.gson.Gson;
+
+import br.com.pontocontrol.controleponto.ExtObject;
 
 /**
  *

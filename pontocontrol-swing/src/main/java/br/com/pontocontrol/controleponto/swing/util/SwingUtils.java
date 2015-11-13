@@ -5,7 +5,6 @@
  */
 package br.com.pontocontrol.controleponto.swing.util;
 
-import br.com.pontocontrol.controleponto.PathsManager;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +17,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
+
 import org.apache.commons.lang.StringUtils;
+
+import br.com.pontocontrol.controleponto.PathsManager;
 
 /**
  *
