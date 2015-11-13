@@ -36,8 +36,9 @@ Icon
 .Spotlight-V100
 .Trashes
 
-target/*
 nb-configuration.xml
 nbactions.xml
-/pontocontrol-core/target/
-/pontocontrol-swing/target/
+**/target
+.project
+.settings
+.classpath
