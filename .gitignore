@@ -40,3 +40,6 @@ target/*
 nb-configuration.xml
 nbactions.xml
 /.project
+/target/
+/.settings/
+/.classpath
