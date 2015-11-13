@@ -6,53 +6,61 @@
 package br.com.pontocontrol.controleponto;
 
 import java.io.File;
+
 import org.apache.commons.io.FilenameUtils;
 
 /**
  *
  * @author silveira
  */
-public class PathsManager {
+public final class PathsManager {
 
-   private static PathsManager instance;
+	private Class<?> mainClass;
 
-   public static PathsManager getInstance() {
-      if (instance == null) {
-         instance = new PathsManager();
-      }
-      return instance;
-   }
+	protected PathsManager(Class<?> mainClass) {
+		this.mainClass = mainClass;
+	}
 
-   public File getFile(String path, String res) {
-      return getFileResource(path, res);
-   }
+	protected static PathsManager instance;
 
-   public String getPathUsuario(String login) {
-      return String.format("%s/%s", projectDataPath(), login);
-   }
+	public static PathsManager getInstance() {
+		if(instance == null) {
+			throw new IllegalStateException("A aplicação deve ser configurada antes. SEE: "+ApplicationFactory.class.getName());
+		}
+		return instance;
+	}
 
-   public String projectDataPath() {
-      return String.format("%s/data", projectRootPath());
-   }
+	public File getFile(String path, String res) {
+		return getFileResource(path, res);
+	}
 
-   public String projectImagesPath() {
-      return String.format("%s/img", projectRootPath());
-   }
+	public String getPathUsuario(String login) {
+		return String.format("%s/%s", projectDataPath(), login);
+	}
 
-   public File getImageFile(String resource) {
-      return getFileResource(projectImagesPath(), resource);
-   }
+	public String projectDataPath() {
+		return String.format("%s/data", projectRootPath());
+	}
 
-   public String projectBinPath() {
-      return String.format("%s/bin", projectRootPath());
-   }
+	public String projectImagesPath() {
+		return String.format("%s/img", projectRootPath());
+	}
 
-   public File getFileResource(String path, String resource) {
-      return new File(String.format("%s/%s", path, resource));
-   }
+	public File getImageFile(String resource) {
+		return getFileResource(projectImagesPath(), resource);
+	}
 
-   public String projectRootPath() {
-      String buildDir = FilenameUtils.getFullPath(SessaoManager.class.getProtectionDomain().getCodeSource().getLocation().getFile());
-      return new File(buildDir).getParentFile().getAbsolutePath();
-   }
+	public String projectBinPath() {
+		return String.format("%s/bin", projectRootPath());
+	}
+
+	public File getFileResource(String path, String resource) {
+		return new File(String.format("%s/%s", path, resource));
+	}
+
+	public String projectRootPath() {
+		String buildDir = FilenameUtils
+				.getFullPath(mainClass.getProtectionDomain().getCodeSource().getLocation().getFile());
+		return new File(buildDir).getParentFile().getAbsolutePath();
+	}
 }

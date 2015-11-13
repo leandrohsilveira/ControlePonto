@@ -5,11 +5,14 @@
  */
 package br.com.pontocontrol.controleponto;
 
+import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.lang.StringUtils;
+
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 import br.com.pontocontrol.controleponto.swing.PainelPrincipalFrame;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -17,50 +20,47 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ControlePonto {
 
-   private static final Logger LOG = Logger.getLogger(ControlePonto.class.getName());
+	private static final Logger LOG = Logger.getLogger(ControlePonto.class.getName());
 
-   /**
-    * Main execution
-    *
-    * @param args
-    */
-   public static void main(String[] args) {
-      LOG.info(String.format("Inicializando aplicação no diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
-      solicitarLogin();
-      if (SessaoManager.getInstance().getUsuarioAutenticado() != null) {
-         PainelPrincipalFrame.main(args);
-      }
-      LOG.info(String.format("Finalizando aplicação do diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
-   }
+	/**
+	 * Main execution
+	 *
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		ApplicationFactory.runApplication(ControlePonto.class);
+		LOG.info(String.format("Inicializando aplicação no diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
+		solicitarLogin();
+		if (SessaoManager.getInstance().getUsuarioAutenticado() != null) {
+			PainelPrincipalFrame.main(args);
+		}
+		LOG.info(String.format("Finalizando aplicação do diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
+	}
 
-   public static void solicitarLogin() {
-      String usuario;
-      do {
-         usuario = JOptionPane.showInputDialog(null, "Informe seu usuário:", "Identificação", JOptionPane.INFORMATION_MESSAGE);
-         if (StringUtils.isBlank(usuario)) {
-            JOptionPane.showMessageDialog(null, "Informe um login de usuário.", "Validação falhou.", JOptionPane.ERROR_MESSAGE);
-         }
-      } while (StringUtils.isBlank(usuario));
-      switch (SessaoManager.getInstance().autenticar(usuario)) {
-         case SessaoManager.LOGIN_STATUS.OK:
+	public static void solicitarLogin() {
+		String usuario;
+		do {
+			usuario = JOptionPane.showInputDialog(null, "Informe seu usuário:", "Identificação", JOptionPane.INFORMATION_MESSAGE);
+			if (StringUtils.isBlank(usuario)) {
+				JOptionPane.showMessageDialog(null, "Informe um login de usuário.", "Validação falhou.", JOptionPane.ERROR_MESSAGE);
+			}
+		} while (StringUtils.isBlank(usuario));
+		switch (SessaoManager.getInstance().autenticar(usuario)) {
+		case SessaoManager.LOGIN_STATUS.OK:
 
-            break;
-         case SessaoManager.LOGIN_STATUS.USUARIO_NAO_EXISTE:
-            int opt = JOptionPane.showConfirmDialog(null,
-                                                    String.format("O usuário com o login informado \"%s\" não existe, deseja criar um novo usuário?", usuario),
-                                                    "Usuário não encontrado.",
-                                                    JOptionPane.YES_NO_OPTION,
-                                                    JOptionPane.WARNING_MESSAGE);
-            if (JOptionPane.YES_OPTION == opt) {
-               ConfiguracoesUsuario configuracoesUsuario = new ConfiguracoesUsuario(usuario);
-               SessaoManager.getInstance().criarUsuario(configuracoesUsuario);
-               SessaoManager.getInstance().autenticar(usuario);
-            }
-            break;
-         default:
+			break;
+		case SessaoManager.LOGIN_STATUS.USUARIO_NAO_EXISTE:
+			final int opt = JOptionPane.showConfirmDialog(null, String.format("O usuário com o login informado \"%s\" não existe, deseja criar um novo usuário?", usuario), "Usuário não encontrado.", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (JOptionPane.YES_OPTION == opt) {
+				final ConfiguracoesUsuario configuracoesUsuario = new ConfiguracoesUsuario(usuario);
+				SessaoManager.getInstance().criarUsuario(configuracoesUsuario);
+				SessaoManager.getInstance().autenticar(usuario);
+			}
+			break;
+		default:
 
-            break;
-      }
-   }
+			break;
+		}
+	}
 
 }
