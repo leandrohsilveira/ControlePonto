@@ -6,6 +6,7 @@
 package br.com.pontocontrol.controleponto.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,5 +33,17 @@ public class DateUtils {
 
    public static String formatNow(String pattern) {
       return formatDate(pattern, now());
+   }
+
+   public static int getActualYear() {
+      return Calendar.getInstance().get(Calendar.YEAR);
+   }
+
+   public static int getActualMonth() {
+      return Calendar.getInstance().get(Calendar.MONTH);
+   }
+
+   public static int getActualDayOfMonth() {
+      return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
    }
 }

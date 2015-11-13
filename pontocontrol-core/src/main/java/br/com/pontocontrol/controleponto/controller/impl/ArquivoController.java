@@ -5,6 +5,7 @@
  */
 package br.com.pontocontrol.controleponto.controller.impl;
 
+import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.controller.IArquivoController;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

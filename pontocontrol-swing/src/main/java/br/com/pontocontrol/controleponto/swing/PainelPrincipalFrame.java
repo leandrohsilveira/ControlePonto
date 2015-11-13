@@ -5,10 +5,12 @@
  */
 package br.com.pontocontrol.controleponto.swing;
 
+import br.com.pontocontrol.controleponto.FrameManager;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.model.RegistroDiarioPonto;
 import br.com.pontocontrol.controleponto.swing.event.MensagemConfirmacao;
 import br.com.pontocontrol.controleponto.swing.event.MensagemInformativa;
+import br.com.pontocontrol.controleponto.swing.util.SwingUtils;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import br.com.pontocontrol.controleponto.view.PontoControlViewState;
 import java.awt.Image;
@@ -30,7 +32,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
    public PainelPrincipalFrame() {
       initComponents();
       init();
-      SessaoManager.getInstance().registrarFrame(ID, this);
+      FrameManager.getInstance().registrarFrame(ID, this);
    }
 
    public static final String ID = "frame-principal";
@@ -46,7 +48,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
       tableModel = (DefaultTableModel) tabelaRegistros.getModel();
       atualizarValores();
       cmpUsuario.setText(SessaoManager.getInstance().getUsuarioAutenticado().getLogin());
-      Image img = SessaoManager.getInstance().getImageResource("icon.png");
+      Image img = SwingUtils.getImage("icon.png");
       if (img != null) {
          setIconImage(img);
       }
@@ -54,7 +56,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
    }
 
    private void configurarViewState() {
-      viewState = new PontoControlViewState();
+      viewState = new PontoControlViewState(SessaoManager.getInstance().getUsuarioAutenticado());
       viewState.setFazerDepoisRegistrarAgora(() -> {
          viewState.mesAtual();
          atualizarValores();
@@ -142,7 +144,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
    }
 
    private void doExtrairXLS() {
-      boolean ok = viewState.extrairParaXLS();
+      boolean ok = viewState.extrairParaXLS(SessaoManager.getInstance().getUsuarioAutenticado().getPathUsuario());
       if (ok) {
          JOptionPane.showMessageDialog(this, "Folha de Ponto mensal extraída com sucesso!", "Extrair para XLS", JOptionPane.INFORMATION_MESSAGE);
       } else {

@@ -21,7 +21,7 @@ public abstract class BaseSessaoManager {
 
    }
 
-   private ConfiguracoesUsuario usuario;
+   protected ConfiguracoesUsuario usuario;
 
    public ConfiguracoesUsuario getUsuarioAutenticado() {
       return usuario;

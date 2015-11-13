@@ -6,6 +6,7 @@
 package br.com.pontocontrol.controleponto.model;
 
 import br.com.pontocontrol.controleponto.ExtObject;
+import br.com.pontocontrol.controleponto.PathsManager;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 import java.util.Calendar;
 
@@ -21,6 +22,8 @@ public class ConfiguracoesUsuario extends ExtObject {
 
    //login e user path.
    private String login;
+
+   private String pathUsuario;
 
    //Expediente
    private boolean segunda = true;
@@ -138,6 +141,17 @@ public class ConfiguracoesUsuario extends ExtObject {
 
    public void setAlmoco(long almoco) {
       this.almoco = almoco;
+   }
+
+   public String getPathUsuario() {
+      if (pathUsuario != null) {
+         return pathUsuario;
+      }
+      return PathsManager.getInstance().getPathUsuario(getLogin());
+   }
+
+   public void setPathUsuario(String pathUsuario) {
+      this.pathUsuario = pathUsuario;
    }
 
 }

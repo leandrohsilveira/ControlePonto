@@ -6,6 +6,7 @@
 package br.com.pontocontrol.controleponto.controller.impl;
 
 import br.com.pontocontrol.controleponto.ExtObject;
+import br.com.pontocontrol.controleponto.PathsManager;
 import br.com.pontocontrol.controleponto.controller.IConfiguracaoUsuarioController;
 import br.com.pontocontrol.controleponto.controller.json.impl.ConfiguracoesUsuarioJSON;
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
@@ -40,7 +41,7 @@ public class ConfiguracaoUsuarioController extends ExtObject implements IConfigu
 
    @Override
    public ConfiguracoesUsuarioJSON recuperarConfiguracaoUsuario(String login) {
-      File arquivo = new File(String.format("%s/%s/%s", projectDataPath(), login, String.format(ARQUIVO_CONFIGURACAO_PATTERN, login)));
+      File arquivo = new File(String.format("%s/%s", PathsManager.getInstance().getPathUsuario(login), String.format(ARQUIVO_CONFIGURACAO_PATTERN, login)));
       if (arquivo.exists()) {
          try (BufferedReader reader = new BufferedReader(new FileReader(arquivo));) {
             String conteudo = reader.readLine();
@@ -58,7 +59,7 @@ public class ConfiguracaoUsuarioController extends ExtObject implements IConfigu
          LOG.warning("ConfiguracoesUsuario null, nenhuma configuração de usuário foi sincronizada.");
          return;
       }
-      File arquivo = new File(String.format("%s/%s", model.getPathUsuario(), String.format(ARQUIVO_CONFIGURACAO_PATTERN, model.getLogin())));
+      File arquivo = new File(String.format("%s/%s", PathsManager.getInstance().getPathUsuario(model.getLogin()), String.format(ARQUIVO_CONFIGURACAO_PATTERN, model.getLogin())));
       if (arquivo.exists()) {
          LOG.info(String.format("Atualizando o arquivo de configuração do usuário de login \"%s\"", model.getLogin()));
       } else {

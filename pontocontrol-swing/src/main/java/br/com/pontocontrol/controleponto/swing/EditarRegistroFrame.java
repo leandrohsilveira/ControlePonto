@@ -5,8 +5,8 @@
  */
 package br.com.pontocontrol.controleponto.swing;
 
-import br.com.pontocontrol.controleponto.SessaoManager;
-import br.com.pontocontrol.controleponto.util.SwingUtils;
+import br.com.pontocontrol.controleponto.FrameManager;
+import br.com.pontocontrol.controleponto.swing.util.SwingUtils;
 import br.com.pontocontrol.controleponto.view.PontoControlViewState;
 import java.awt.Image;
 
@@ -35,7 +35,7 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
       atualizarCampos();
       atualizarTotais();
 
-      Image img = SwingUtils.getImageResource("icon.png");
+      Image img = SwingUtils.getImage("icon.png");
       if (img != null) {
          setIconImage(img);
       }
@@ -281,8 +281,8 @@ public class EditarRegistroFrame extends javax.swing.JFrame {
    }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-      SessaoManager.getInstance().apagarFrame(ID);
-      PainelPrincipalFrame main = (PainelPrincipalFrame) SessaoManager.getInstance().getFrame(PainelPrincipalFrame.ID);
+      FrameManager.getInstance().apagarFrame(ID);
+      PainelPrincipalFrame main = (PainelPrincipalFrame) FrameManager.getInstance().getFrame(PainelPrincipalFrame.ID);
       main.setEnabled(true);
       main.requestFocus();
       main.atualizarValores();

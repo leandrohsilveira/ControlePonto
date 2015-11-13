@@ -25,12 +25,12 @@ public class ControlePonto {
     * @param args
     */
    public static void main(String[] args) {
-      LOG.info(format("Inicializando aplicação no diretório \"%s\"", projectDataPath()));
+      LOG.info(String.format("Inicializando aplicação no diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
       solicitarLogin();
       if (SessaoManager.getInstance().getUsuarioAutenticado() != null) {
          PainelPrincipalFrame.main(args);
       }
-      LOG.info(format("Finalizando aplicação do diretório \"%s\"", projectDataPath()));
+      LOG.info(String.format("Finalizando aplicação do diretório \"%s\"", PathsManager.getInstance().projectDataPath()));
    }
 
    public static void solicitarLogin() {
@@ -47,7 +47,7 @@ public class ControlePonto {
             break;
          case SessaoManager.LOGIN_STATUS.USUARIO_NAO_EXISTE:
             int opt = JOptionPane.showConfirmDialog(null,
-                                                    format("O usuário com o login informado \"%s\" não existe, deseja criar um novo usuário?", usuario),
+                                                    String.format("O usuário com o login informado \"%s\" não existe, deseja criar um novo usuário?", usuario),
                                                     "Usuário não encontrado.",
                                                     JOptionPane.YES_NO_OPTION,
                                                     JOptionPane.WARNING_MESSAGE);
