@@ -43,3 +43,4 @@ nbactions.xml
 .settings
 .classpath
 pom.xml.versionsBackup
+/target/
