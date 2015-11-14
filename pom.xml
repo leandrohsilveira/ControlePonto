@@ -89,6 +89,7 @@
    <modules>
       <module>pontocontrol-core</module>
       <module>pontocontrol-swing</module>
+      <module>pontocontrol-fx</module>
    </modules>
 
 </project>

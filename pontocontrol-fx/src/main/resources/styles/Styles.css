@@ -1,0 +1,12 @@
+.button {
+    -fx-font-weight: bold;
+}
+
+#title {
+	-fx-text-fill: #FFFFFF;
+	-fx-font-size: 40px;
+}
+
+#titleBar {
+	-fx-background-color: #7777CC;
+}
