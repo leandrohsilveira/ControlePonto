@@ -1,4 +1,4 @@
-package br.com.lhs.pontocontrol.jetty.util;
+package br.com.lhs.pontocontrol.web.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
