@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -41,22 +42,29 @@ public class ApplicationService {
 				http.setIdleTimeout(30000);
 				server.addConnector(http);
 
-				final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-				context.setContextPath("/ponto-control-fx");
+				final HandlerList serverContextHandlersList = new HandlerList();
 
+				final ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+				servletContextHandler.setContextPath("/pontocontrol/controller");
+				ServletMapping.config(servletContextHandler);
+
+				final ContextHandler resourcesContextHandler = new ContextHandler("/pontocontrol/view");
+				final DefaultHandler defaultHandler = new DefaultHandler();
 				final ResourceHandler resourceHandler = new ResourceHandler();
-				Resource baseResource = Resource.newResource(WebMainClass.class.getClassLoader().getResource("webapp").toURI());
-				resourceHandler.setBaseResource(baseResource);
+				final GzipHandler gzipHandler = new GzipHandler();
+				final HandlerList gzipHandlersList = new HandlerList();
+				resourceHandler.setBaseResource(Resource.newResource(WebMainClass.class.getClassLoader().getResource("webapp").toURI()));
 				resourceHandler.setDirectoriesListed(true);
 				resourceHandler.setWelcomeFiles(new String[] { "ponto-control-fx.html" });
-				final HandlerList handlers = new HandlerList();
-				final GzipHandler gzip = new GzipHandler();
-				handlers.setHandlers(new Handler[] { resourceHandler, new DefaultHandler() });
-				gzip.setHandler(handlers);
-				context.setHandler(gzip);
-				server.setHandler(context);
-				ServletMapping.config(context);
+				gzipHandlersList.setHandlers(new Handler[] { resourceHandler, defaultHandler });
+				gzipHandler.setHandler(gzipHandlersList);
+				resourcesContextHandler.setHandler(gzipHandler);
+
+				serverContextHandlersList.setHandlers(new Handler[] { servletContextHandler, resourcesContextHandler });
+
+				server.setHandler(serverContextHandlersList);
 				server.start();
+				server.dumpStdErr();
 				server.join();
 			} catch (final InterruptedException e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);

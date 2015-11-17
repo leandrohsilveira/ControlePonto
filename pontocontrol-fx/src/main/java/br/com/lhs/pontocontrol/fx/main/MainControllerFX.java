@@ -18,12 +18,12 @@ public class MainControllerFX implements Initializable {
 	private WebView webView;
 
 	@Override
-	public void initialize(URL url, ResourceBundle rb) {
+	public void initialize(final URL url, final ResourceBundle rb) {
 		final WebEngine engine = webView.getEngine();
 
 		// PathsManager.getInstance().getFileResource(PathsManager.getInstance().projectRootPath(), "/html/ponto-control-fx.html");
 
-		engine.load("http://localhost:8441/ponto-control-fx");
+		engine.load("http://localhost:8441/pontocontrol/view");
 	}
 
 }

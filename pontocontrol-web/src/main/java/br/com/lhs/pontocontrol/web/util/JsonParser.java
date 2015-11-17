@@ -1,5 +1,6 @@
 package br.com.lhs.pontocontrol.web.util;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,17 +33,21 @@ public class JsonParser {
 	private JsonParser() {
 	}
 
-	public static <T> T parse(String json, Class<T> type) {
+	public static <T> T parse(final String json, final Class<T> type) {
 		return GSON_BUILDER.create().fromJson(json, type);
 	}
 
-	public static <T> String format(T obj) {
+	public static <T> T parse(final String json, final Type type) {
+		return GSON_BUILDER.create().fromJson(json, type);
+	}
+
+	public static <T> String format(final T obj) {
 		return GSON_BUILDER.create().toJson(obj);
 	}
 
 	private static class DateSerializer implements JsonSerializer<Date> {
 		@Override
-		public JsonElement serialize(Date src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
+		public JsonElement serialize(final Date src, final java.lang.reflect.Type typeOfSrc, final JsonSerializationContext context) {
 			return new JsonPrimitive(DEFAULT_DATE_FORMAT.format(src));
 		}
 	}
@@ -50,7 +55,7 @@ public class JsonParser {
 	private static class DateDeserializer implements JsonDeserializer<Date> {
 
 		@Override
-		public Date deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public Date deserialize(final JsonElement json, final java.lang.reflect.Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 			try {
 				return DEFAULT_DATE_FORMAT.parse(json.getAsString());
 			} catch (final ParseException e) {
