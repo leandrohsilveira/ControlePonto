@@ -20,16 +20,12 @@
 			<artifactId>jetty-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-plus</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-deploy</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>br.com.pontocontrol</groupId>
 			<artifactId>pontocontrol-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-plus</artifactId>
 		</dependency>
 	</dependencies>
 
