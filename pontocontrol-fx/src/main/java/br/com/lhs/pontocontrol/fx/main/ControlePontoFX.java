@@ -1,22 +1,8 @@
 package br.com.lhs.pontocontrol.fx.main;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.file.StandardOpenOption;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
+import br.com.lhs.pontocontrol.jetty.ApplicationService;
 import br.com.pontocontrol.controleponto.ApplicationFactory;
 import br.com.pontocontrol.controleponto.PathsManager;
 import javafx.application.Application;
@@ -30,7 +16,13 @@ public class ControlePontoFX extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		ApplicationFactory.runApplication(ControlePontoFX.class);
-		new ApplicationServer(8441).run();
+
+		// final ServerRoute serverRoute = new ServerRoute().define("/favicon.ico", new Content(PathsManager.getInstance().getImageFile("favicon.ico"), "image/x-icon"));
+
+		// new Server().run(8441, serverRoute);
+
+		final ApplicationService applicationService = new ApplicationService(8441);
+		applicationService.run();
 
 		final String projectRoot = PathsManager.getInstance().projectRootPath();
 		final URL sceneUrl = PathsManager.getInstance().getFileResource(projectRoot, "/fxml/Scene.fxml").toURI().toURL();
@@ -44,6 +36,9 @@ public class ControlePontoFX extends Application {
 
 		stage.setTitle("Controle Ponto [PontoControl FX]");
 		stage.setScene(scene);
+		stage.setOnCloseRequest((event) -> {
+			applicationService.stop();
+		});
 		stage.show();
 	}
 
@@ -55,57 +50,6 @@ public class ControlePontoFX extends Application {
 	 */
 	public static void main(String[] args) {
 		Application.launch(args);
-	}
-
-}
-
-class ApplicationServer {
-
-	private int port;
-	private ServerSocket serverSocket;
-
-	public ApplicationServer(int port) {
-		super();
-		this.port = port;
-	}
-
-	public void run() {
-		if (serverSocket == null) {
-			new Thread(() -> {
-				final boolean execute = true;
-				try {
-					serverSocket = new ServerSocket(port);
-					final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 10, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-					while (execute) {
-						final Socket client = serverSocket.accept();
-						executor.execute(() -> {
-							try {
-								final BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-								final String line = in.readLine();
-								if (StringUtils.isNotBlank(line)) {
-									final OutputStream out = client.getOutputStream();
-
-									final String[] props = line.split(" ");
-									final String path = props[1];
-									final FileChannel channel = FileChannel.open(PathsManager.getInstance().getFileResource(PathsManager.getInstance().projectRootPath(), path).toPath(), StandardOpenOption.READ);
-									IOUtils.copyLarge(Channels.newInputStream(channel), out);
-									IOUtils.closeQuietly(channel);
-									IOUtils.closeQuietly(out);
-								}
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
-						});
-					}
-				} catch (final IOException e1) {
-					e1.printStackTrace();
-					serverSocket = null;
-					System.exit(-1);
-				}
-			}).start();
-		} else {
-			throw new IllegalStateException("O servidor da aplicação já está rodando.");
-		}
 	}
 
 }

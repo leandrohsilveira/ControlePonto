@@ -14,6 +14,10 @@
 			<groupId>br.com.pontocontrol</groupId>
 			<artifactId>pontocontrol-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>br.com.pontocontrol</groupId>
+			<artifactId>pontocontrol-jetty</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -107,10 +111,10 @@
 			</resource>
 			<resource>
 				<includes>
-					<include>${project.dirname.img}/*</include>
-					<include>fxml/*</include>
-					<include>html/*</include>
-					<include>styles/*</include>
+					<include>${project.dirname.img}/**</include>
+					<include>fxml/**</include>
+					<include>html/**</include>
+					<include>styles/**</include>
 				</includes>
 				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
@@ -118,10 +122,10 @@
 			</resource>
 			<resource>
 				<includes>
-					<include>${project.dirname.img}/*</include>
-					<include>fxml/*</include>
-					<include>html/*</include>
-					<include>styles/*</include>
+					<include>${project.dirname.img}/**</include>
+					<include>fxml/**</include>
+					<include>html/**</include>
+					<include>styles/**</include>
 				</includes>
 				<directory>src/main/resources</directory>
 				<filtering>false</filtering>

@@ -1,6 +1,6 @@
 angular.module('PontoControlFX')
 
-.controller('RegistroMensalController', function($scope, $location, transactions) {
+.controller('RegistroMensalController', function($scope, $location) {
 
 
 
