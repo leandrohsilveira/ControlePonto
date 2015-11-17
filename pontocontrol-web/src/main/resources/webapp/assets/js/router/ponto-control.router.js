@@ -4,7 +4,18 @@ angular.module('PontoControlFX')
 
 	$routeProvider.when('/registro/mensal', {
 		templateUrl: 'registro-mensal.html',
-		controller: 'RegistroMensalController'
+		controller: 'RegistroMensalController',
+		resolve: {
+			registros: function ($location, PontoService) {
+				return PontoService.then(function (response) {
+					return response.data;
+				}, function (errorResponse) {
+					console.error(errorResponse)
+					alert(errorResponse.data);
+					return;
+				});
+			}
+		}
 	})
 
 });
