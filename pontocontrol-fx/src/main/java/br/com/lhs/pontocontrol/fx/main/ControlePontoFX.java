@@ -3,7 +3,6 @@ package br.com.lhs.pontocontrol.fx.main;
 import java.net.URL;
 
 import br.com.lhs.pontocontrol.jetty.ApplicationService;
-import br.com.pontocontrol.controleponto.ApplicationFactory;
 import br.com.pontocontrol.controleponto.PathsManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,14 +13,9 @@ import javafx.stage.Stage;
 public class ControlePontoFX extends Application {
 
 	@Override
-	public void start(Stage stage) throws Exception {
-		ApplicationFactory.runApplication(ControlePontoFX.class);
+	public void start(final Stage stage) throws Exception {
+		final ApplicationService applicationService = new ApplicationService(8441, ControlePontoFX.class);
 
-		// final ServerRoute serverRoute = new ServerRoute().define("/favicon.ico", new Content(PathsManager.getInstance().getImageFile("favicon.ico"), "image/x-icon"));
-
-		// new Server().run(8441, serverRoute);
-
-		final ApplicationService applicationService = new ApplicationService(8441);
 		applicationService.run();
 
 		final String projectRoot = PathsManager.getInstance().projectRootPath();
@@ -48,7 +42,7 @@ public class ControlePontoFX extends Application {
 	 * @param args
 	 *           the command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		Application.launch(args);
 	}
 
