@@ -11,21 +11,26 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.resource.Resource;
 
-import br.com.pontocontrol.controleponto.PathsManager;
+import br.com.lhs.pontocontrol.web.WebMainClass;
+import br.com.pontocontrol.controleponto.ApplicationFactory;
 
 public class ApplicationService {
 
 	private static final Logger logger = Logger.getLogger(ApplicationService.class.getName());
 
-	private int port;
+	private final int port;
 	private Server server;
+	private final Class<?> mainClass;
 
-	public ApplicationService(int port) {
+	public ApplicationService(final int port, final Class<?> mainClass) {
 		this.port = port;
+		this.mainClass = mainClass;
 	}
 
 	public void run() {
+		ApplicationFactory.runApplication(mainClass);
 		new Thread(() -> {
 			try {
 				server = new Server();
@@ -40,7 +45,8 @@ public class ApplicationService {
 				context.setContextPath("/ponto-control-fx");
 
 				final ResourceHandler resourceHandler = new ResourceHandler();
-				resourceHandler.setResourceBase(PathsManager.getInstance().projectRootPath() + "/html");
+				Resource baseResource = Resource.newResource(WebMainClass.class.getClassLoader().getResource("webapp").toURI());
+				resourceHandler.setBaseResource(baseResource);
 				resourceHandler.setDirectoriesListed(true);
 				resourceHandler.setWelcomeFiles(new String[] { "ponto-control-fx.html" });
 				final HandlerList handlers = new HandlerList();
