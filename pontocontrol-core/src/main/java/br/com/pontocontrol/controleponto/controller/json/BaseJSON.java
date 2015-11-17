@@ -10,28 +10,26 @@ import java.io.Serializable;
 
 import com.google.gson.Gson;
 
-import br.com.pontocontrol.controleponto.ExtObject;
-
 /**
  *
  * @author Leandro
  * @param <M>
  * @param <J>
  */
-public abstract class BaseJSON<M, J> extends ExtObject implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
-    
-    public String toJSON() {
-        return new Gson().toJson(this);
-    }
-    
-    public J fromJSON(String json) {
-        return new Gson().fromJson(json, getJsonClass());
-    }
-    
-    public abstract Class<J> getJsonClass();
-    
-    public abstract M toModel();
-    
+public abstract class BaseJSON<M, J> implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	public String toJSON() {
+		return new Gson().toJson(this);
+	}
+
+	public J fromJSON(final String json) {
+		return new Gson().fromJson(json, getJsonClass());
+	}
+
+	public abstract Class<J> getJsonClass();
+
+	public abstract M toModel();
+
 }

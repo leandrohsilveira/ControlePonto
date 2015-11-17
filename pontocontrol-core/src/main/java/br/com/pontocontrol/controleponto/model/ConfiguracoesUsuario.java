@@ -7,7 +7,6 @@ package br.com.pontocontrol.controleponto.model;
 
 import java.util.Calendar;
 
-import br.com.pontocontrol.controleponto.ExtObject;
 import br.com.pontocontrol.controleponto.PathsManager;
 import br.com.pontocontrol.controleponto.util.TimeUtils;
 
@@ -15,9 +14,9 @@ import br.com.pontocontrol.controleponto.util.TimeUtils;
  *
  * @author silveira
  */
-public class ConfiguracoesUsuario extends ExtObject {
+public class ConfiguracoesUsuario {
 
-	public ConfiguracoesUsuario(String login) {
+	public ConfiguracoesUsuario(final String login) {
 		this.login = login;
 	}
 
@@ -30,7 +29,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return nome;
 	}
 
-	public void setNome(String nome) {
+	public void setNome(final String nome) {
 		this.nome = nome;
 	}
 
@@ -52,7 +51,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return checarSeDiaExpediente(Calendar.getInstance());
 	}
 
-	public boolean checarSeDiaExpediente(Calendar date) {
+	public boolean checarSeDiaExpediente(final Calendar date) {
 		final int dia = date.get(Calendar.DAY_OF_WEEK);
 		switch (dia) {
 		case Calendar.MONDAY:
@@ -78,7 +77,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return login;
 	}
 
-	public void setLogin(String login) {
+	public void setLogin(final String login) {
 		this.login = login;
 	}
 
@@ -86,7 +85,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return segunda;
 	}
 
-	public void setSegunda(boolean segunda) {
+	public void setSegunda(final boolean segunda) {
 		this.segunda = segunda;
 	}
 
@@ -94,7 +93,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return terca;
 	}
 
-	public void setTerca(boolean terca) {
+	public void setTerca(final boolean terca) {
 		this.terca = terca;
 	}
 
@@ -102,7 +101,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return quarta;
 	}
 
-	public void setQuarta(boolean quarta) {
+	public void setQuarta(final boolean quarta) {
 		this.quarta = quarta;
 	}
 
@@ -110,7 +109,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return quinta;
 	}
 
-	public void setQuinta(boolean quinta) {
+	public void setQuinta(final boolean quinta) {
 		this.quinta = quinta;
 	}
 
@@ -118,7 +117,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return sexta;
 	}
 
-	public void setSexta(boolean sexta) {
+	public void setSexta(final boolean sexta) {
 		this.sexta = sexta;
 	}
 
@@ -126,7 +125,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return sabado;
 	}
 
-	public void setSabado(boolean sabado) {
+	public void setSabado(final boolean sabado) {
 		this.sabado = sabado;
 	}
 
@@ -134,7 +133,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return domingo;
 	}
 
-	public void setDomingo(boolean domingo) {
+	public void setDomingo(final boolean domingo) {
 		this.domingo = domingo;
 	}
 
@@ -142,7 +141,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return offset;
 	}
 
-	public void setOffset(long offset) {
+	public void setOffset(final long offset) {
 		this.offset = offset;
 	}
 
@@ -150,7 +149,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return almoco;
 	}
 
-	public void setAlmoco(long almoco) {
+	public void setAlmoco(final long almoco) {
 		this.almoco = almoco;
 	}
 
@@ -161,7 +160,7 @@ public class ConfiguracoesUsuario extends ExtObject {
 		return PathsManager.getInstance().getPathUsuario(getLogin());
 	}
 
-	public void setPathUsuario(String pathUsuario) {
+	public void setPathUsuario(final String pathUsuario) {
 		this.pathUsuario = pathUsuario;
 	}
 
