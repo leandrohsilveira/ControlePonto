@@ -25,7 +25,7 @@ public class ConfiguracoesUsuarioJSON extends BaseJSON<ConfiguracoesUsuario, Con
         sexta = model.isSexta();
         sabado = model.isSabado();
         domingo = model.isDomingo();
-        offset = model.getExpediente();
+        offset = model.getOffset();
     }
     
     //login e user path.

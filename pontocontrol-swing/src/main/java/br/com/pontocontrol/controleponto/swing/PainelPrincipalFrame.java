@@ -81,7 +81,7 @@ public class PainelPrincipalFrame extends javax.swing.JFrame {
 
    public void atualizarValores() {
       limparTabela();
-      long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getExpediente();
+      long usrOffset = SessaoManager.getInstance().getUsuarioAutenticado().getOffset();
       cmpTotalMes.setText(String.format("%s - %s", viewState.getTotalMensal(), viewState.getTotalEsperadoMensal()));
       cmpTotalMes.setToolTipText(String.format("Variação: %s", viewState.getVariacaoMensal()));
       labelPeríodo.setText(viewState.getIntervaloSelecionadoAsString());

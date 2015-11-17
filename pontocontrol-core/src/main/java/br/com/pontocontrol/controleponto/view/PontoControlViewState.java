@@ -75,7 +75,7 @@ public class PontoControlViewState {
 		folhaPontoJson = folhaPontocontroller.recuperarFolhaMensal(ano, mes);
 		if (folhaPontoJson != null) {
 			folhaMensal = folhaPontoJson.toModel();
-			usrExp = configuracaoUsuario.getExpediente() / TimeUtils.OFFSET_1_HORA;
+			usrExp = configuracaoUsuario.getOffset() / TimeUtils.OFFSET_1_HORA;
 			totalMensal = folhaMensal.calcularTotalMensal(usrExp);
 			variacaoMensal = folhaMensal.calcularVariacaoMensal(usrExp);
 			totalEsperadoMensal = folhaMensal.calcularTotalMensalEsperado(usrExp);
@@ -180,7 +180,7 @@ public class PontoControlViewState {
 
 	public String getTotalExpediente() {
 		if (totalExpediente != null) {
-			return String.format("%s (%.3f)", TimeUtils.fromLocalTime(totalExpediente, TIME_PATTERN), (TimeUtils.toNumberLocalTime(totalExpediente, configuracaoUsuario.getExpediente())));
+			return String.format("%s (%.3f)", TimeUtils.fromLocalTime(totalExpediente, TIME_PATTERN), (TimeUtils.toNumberLocalTime(totalExpediente, configuracaoUsuario.getOffset())));
 		}
 		return "-";
 	}
@@ -194,7 +194,7 @@ public class PontoControlViewState {
 
 	public String getVariacaoExpediente() {
 		if (variacaoExpediente != null) {
-			return String.format("%s (%.3f)", TimeUtils.fromLocalTime(TimeUtils.fromNumberLocalTime(variacaoExpediente, configuracaoUsuario.getExpediente()), TIME_PATTERN), (variacaoExpediente));
+			return String.format("%s (%.3f)", TimeUtils.fromLocalTime(TimeUtils.fromNumberLocalTime(variacaoExpediente, configuracaoUsuario.getOffset()), TIME_PATTERN), (variacaoExpediente));
 		}
 		return "-";
 	}
