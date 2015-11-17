@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>pontocontrol-web</artifactId>
 	<name>Módulo com conteúdo Web do Ponto Control</name>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<build>
 		<plugins>
@@ -41,22 +41,6 @@
 					</resources>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warName>${project.artifactId}</warName>
-					<!-- Java EE 6 doesn't require web.xml, Maven needs to catch up! -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<webResources>
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>src/main/webapp/WEB-INF</directory>
-							<filtering>true</filtering>
-							<targetPath>WEB-INF</targetPath>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -64,6 +48,10 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>br.com.pontocontrol</groupId>
+			<artifactId>pontocontrol-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>
