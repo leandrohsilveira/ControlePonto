@@ -13,18 +13,22 @@ import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
  */
 public abstract class BaseSessaoManager {
 
-   public interface LOGIN_STATUS {
+	public interface LOGIN_STATUS {
 
-      public static final int OK = 1;
-      public static final int USUARIO_NAO_EXISTE = 2;
-      public static final int JA_AUTENTICADO = 3;
+		public static final int OK = 1;
+		public static final int USUARIO_NAO_EXISTE = 2;
+		public static final int JA_AUTENTICADO = 3;
 
-   }
+	}
 
-   protected ConfiguracoesUsuario usuario;
+	protected ConfiguracoesUsuario usuario;
 
-   public ConfiguracoesUsuario getUsuarioAutenticado() {
-      return usuario;
-   }
+	public ConfiguracoesUsuario getUsuarioAutenticado() {
+		return usuario;
+	}
+
+	public boolean isUsuarioAutenticado() {
+		return usuario != null;
+	}
 
 }
