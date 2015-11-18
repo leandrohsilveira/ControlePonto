@@ -6,6 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import br.com.lhs.pontocontrol.web.vo.UsuarioVO;
 import br.com.pontocontrol.controleponto.SessaoManager;
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
@@ -13,6 +16,14 @@ import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 public class AutenticacaoServlet extends BaseServlet {
 
 	private static final long serialVersionUID = 3966806345787674814L;
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		final Boolean autenticado = SessaoManager.getInstance().isUsuarioAutenticado();
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.add("autenticado", new JsonPrimitive(autenticado));
+		respondJson(resp, jsonObject);
+	}
 
 	@Override
 	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
