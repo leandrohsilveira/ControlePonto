@@ -30,6 +30,8 @@ public class ControlePontoFX extends Application {
 
 		stage.setTitle("Controle Ponto [PontoControl FX]");
 		stage.setScene(scene);
+		stage.setMinWidth(400);
+		stage.setMinHeight(600);
 		stage.setOnCloseRequest((event) -> {
 			applicationService.stop();
 		});

@@ -3,10 +3,10 @@
 }
 
 #title {
-	-fx-text-fill: #FFFFFF;
-	-fx-font-size: 40px;
+	-fx-text-fill: #9d9d9d;
+	-fx-font-size: 35px;
 }
 
 #titleBar {
-	-fx-background-color: #7777CC;
+	-fx-background-color: #101010;
 }

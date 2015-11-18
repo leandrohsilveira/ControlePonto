@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.media.*?>
 <?import javafx.scene.web.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -11,15 +13,16 @@
    <children>
       <BorderPane layoutX="197.0" layoutY="129.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <Pane fx:id="titleBar" prefHeight="99.0" prefWidth="1028.0" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="titleBar" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="72.0" prefWidth="1028.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="title" layoutX="20.0" layoutY="21.0" text="Controle de Ponto FX" />
-               </children></Pane>
+                  <Label fx:id="title" layoutX="171.0" layoutY="11.0" text="PontoControl FX" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="10.0" />
+                  <ImageView fx:id="appIcon" fitHeight="50.0" fitWidth="50.0" layoutX="-66.0" layoutY="-39.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+               </children></AnchorPane>
          </top>
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <WebView fx:id="webView" layoutX="360.0" layoutY="151.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <WebView fx:id="webView" layoutX="360.0" layoutY="151.0" prefHeight="35.0" prefWidth="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
          </center>
