@@ -6,24 +6,16 @@ public class ServletErrorVO implements Serializable {
 
 	private static final long serialVersionUID = 6344350247263799256L;
 
-	private int code;
+	private int status;
 	private String mensagem;
 
 	public ServletErrorVO() {
 	}
 
-	public ServletErrorVO(final int code, final String mensagem) {
+	public ServletErrorVO(final int status, final String mensagem) {
 		super();
-		this.code = code;
+		this.status = status;
 		this.mensagem = mensagem;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public void setCode(final int code) {
-		this.code = code;
 	}
 
 	public String getMensagem() {
@@ -32,6 +24,14 @@ public class ServletErrorVO implements Serializable {
 
 	public void setMensagem(final String mensagem) {
 		this.mensagem = mensagem;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(final int status) {
+		this.status = status;
 	}
 
 }
