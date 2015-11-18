@@ -68,15 +68,30 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-plus</artifactId>
+<!-- 				<artifactId>jetty-plus</artifactId> -->
+				<artifactId>jetty-servlet</artifactId>
 				<version>9.3.6.v20151106</version>
 			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-deploy</artifactId>
-				<version>9.3.6.v20151106</version>
-			</dependency>
-
+<!-- 			<dependency> -->
+<!-- 				<groupId>org.glassfish.jersey.core</groupId> -->
+<!-- 				<artifactId>jersey-server</artifactId> -->
+<!-- 				<version>2.22.1</version> -->
+<!-- 			</dependency> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>org.glassfish.jersey.containers</groupId> -->
+<!-- 				<artifactId>jersey-container-servlet-core</artifactId> -->
+<!-- 				<version>2.22.1</version> -->
+<!-- 			</dependency> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>org.glassfish.jersey.containers</groupId> -->
+<!-- 				<artifactId>jersey-container-jetty-http</artifactId> -->
+<!-- 				<version>2.22.1</version> -->
+<!-- 			</dependency> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>org.glassfish.jersey.media</groupId> -->
+<!-- 				<artifactId>jersey-media-moxy</artifactId> -->
+<!-- 				<version>2.22.1</version> -->
+<!-- 			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 

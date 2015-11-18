@@ -19,7 +19,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-plus</artifactId>
+<!-- 			<artifactId>jetty-plus</artifactId> -->
+			<artifactId>jetty-servlet</artifactId>
 		</dependency>
 	</dependencies>
 
