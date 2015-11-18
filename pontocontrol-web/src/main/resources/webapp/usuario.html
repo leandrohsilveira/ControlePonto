@@ -1,0 +1,30 @@
+<div class="row">
+	<div class="col-xs-12 form-group">
+		<h1 class="page-header"><i class="fa fa-user"></i> Formulário de Usuário</h1>
+
+		<div class="hidden-xs hidden-sm col-md-2 col-lg-3"></div>
+		<div class="col-sm-12 col-md-8 col-lg-6">
+			<form name="usuarioForm" class="form-horizontal" ng-submit="salvar()">
+				<div class="form-group">
+					<input type="text" class="form-control input-md" ng-model="usuario.nome" placeholder="Nome">
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control input-md" ng-model="usuario.login" placeholder="Login">
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<div class="input-group-addon">Expediente</div>
+						<select class="form-control input-md" ng-model="usuario.offset">
+							<option ng-repeat="_offset in offsets" value="{{_offset.value}}">{{_offset.text}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-md"><span class="fa fa-floppy-o"></span> Salvar</button>
+					<a type="submit" class="btn btn-default btn-md"><span class="fa fa-times"></span> Cancelar</a>
+				</div>
+			</form>
+		</div>
+		<div class="hidden-xs hidden-sm col-md-2 col-lg-3"></div>
+	</div>
+</div>
