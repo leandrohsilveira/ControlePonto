@@ -21,7 +21,7 @@ public class UsuarioServlet extends BaseServlet {
 		if (usuarioAutenticado != null) {
 			respondJson(resp, new ConfiguracoesUsuarioJSON(usuarioAutenticado));
 		} else {
-			respondError(resp, HttpServletResponse.SC_UNAUTHORIZED, "Para acessar este conteúdo você deve autenticar-se primeiro.");
+			respondNoContent(resp);
 		}
 	}
 
@@ -35,10 +35,26 @@ public class UsuarioServlet extends BaseServlet {
 			if (sucesso) {
 				respondJson(resp, new ConfiguracoesUsuarioJSON(configuracoesUsuario));
 			} else {
-				respondError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ocorreu um problema inesperado para salvar o usuário informado.");
+				respondError(resp, HttpServletResponse.SC_CONFLICT, "O usuário informado já existe!");
 			}
 		});
 
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		acceptJson(req, resp, UsuarioVO.class, content -> {
+			if (SessaoManager.getInstance().isUsuarioAutenticado()) {
+				final ConfiguracoesUsuario configuracoesUsuario = SessaoManager.getInstance().getUsuarioAutenticado();
+				configuracoesUsuario.setNome(content.getNome());
+				configuracoesUsuario.setOffset(Long.valueOf(content.getOffset()));
+				SessaoManager.getInstance().atualizarUsuario(configuracoesUsuario);
+				respondNoContent(resp);
+			} else {
+				respondError(resp, HttpServletResponse.SC_UNAUTHORIZED, "Você deve estar autenticado para atualizar seu usuário.");
+			}
+
+		});
 	}
 
 }
