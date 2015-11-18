@@ -8,7 +8,8 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-	<title>Pagamentos com pagseguro</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<title>PontoControl - Controle Pessoal de Ponto</title>
 
 	<!-- LIBS CSS -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxygen:400,300,700" type="text/css">
@@ -25,16 +26,16 @@
 	<br>
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-xs-2"></div>
-			<div class="col-xs-8">
+			<div class="hidden-xs hidden-sm col-md-1"></div>
+			<div class="col-sm-12 col-md-10">
 				<div ng-view></div>
 			</div>
-			<div class="col-xs-2"></div>
+			<div class="hidden-xs hidden-sm col-md-1"></div>
 		</div>
 	</div>
 	<footer class="text-muted text-center">
 		<div class="container-fluid">
-			<span>© COPYRIGHT 2015, Bry Tecnologia.</span>
+			<span>© COPYRIGHT 2015, LHSoftware.</span>
 		</div>
 	</footer>
 	<!-- LIBS JAVASCRIPT -->
@@ -51,9 +52,12 @@
 
 	<!-- Services -->
 	<script type="text/javascript" src="assets/js/service/masked-input.service.js"></script>
+	<script type="text/javascript" src="assets/js/service/ponto.service.js"></script>
 
 	<!-- Controllers -->
 	<script type="text/javascript" src="assets/js/controller/registro-mensal.controller.js"></script>
+	<script type="text/javascript" src="assets/js/controller/login.controller.js"></script>
+	<script type="text/javascript" src="assets/js/controller/usuario.controller.js"></script>
 
 	<!-- Routers -->
 	<script type="text/javascript" src="assets/js/router/ponto-control.router.js"></script>
