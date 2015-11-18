@@ -41,7 +41,7 @@ angular.module('PontoControlFX')
 			mes = now.getMonth();
 		}
 		if(!ano) {
-			ano = now.getYear();
+			ano = now.getYear() + 1900;
 		}
 		return $http({
 			url: url + "/folha/mensal",
