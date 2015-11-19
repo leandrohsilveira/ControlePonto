@@ -22,34 +22,12 @@ angular.module('PontoControlFX')
 
 	.when('/usuario', {
 		templateUrl: 'usuario.html',
-		controller: 'UsuarioController',
-		resolve: {
-			usuarioAutenticado: function (PontoService) {
-				PontoService.getUsuarioAutenticado()
-								.then(function (response) {
-									return response.data;
-								}, function (error) {
-									return PontoService.checkError(error);
-								});
-			}
-		}
+		controller: 'UsuarioController'
 	})
 
 	.when('/registro/mensal', {
 		templateUrl: 'registro-mensal.html',
-		controller: 'RegistroMensalController',
-		resolve: {
-			folhaMensal: function ($location, PontoService) {
-				var mes = $location.search().mes;
-				var ano = $location.search().ano;
-				return PontoService.getFolhaMensal(mes, ano)
-							.then(function (response) {
-								return response.data;
-							}, function (errorResponse) {
-								return PontoService.checkError(errorResponse);
-							});
-			}
-		}
-	})
+		controller: 'RegistroMensalController'
+	});
 
 });

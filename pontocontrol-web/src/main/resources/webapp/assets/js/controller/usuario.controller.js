@@ -5,7 +5,7 @@ angular.module('PontoControlFX')
 	$scope.usuario = {
 		nome: '',
 		login: '',
-		offset: 28800
+		offset: '28800'
 	};
 
 	if(usuarioAutenticado) {
@@ -17,10 +17,10 @@ angular.module('PontoControlFX')
 	}
 
 	$scope.offsets = [
-		{text: '4 Horas', value: 14400},
-		{text: '6 Horas', value: 21600},
-		{text: '8 Horas', value: 28800},
-		{text: '12 Horas', value: 43200}
+		{text: '4 Horas', value: '14400'},
+		{text: '6 Horas', value: '21600'},
+		{text: '8 Horas', value: '28800'},
+		{text: '12 Horas', value: '43200'}
 	];
 
 	$scope.salvar = function () {

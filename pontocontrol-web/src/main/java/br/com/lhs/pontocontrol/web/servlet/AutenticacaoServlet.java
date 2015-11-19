@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import br.com.lhs.pontocontrol.web.vo.UsuarioVO;
 import br.com.pontocontrol.controleponto.SessaoManager;
+import br.com.pontocontrol.controleponto.controller.json.impl.ConfiguracoesUsuarioJSON;
 import br.com.pontocontrol.controleponto.model.ConfiguracoesUsuario;
 
 public class AutenticacaoServlet extends BaseServlet {
@@ -34,8 +34,7 @@ public class AutenticacaoServlet extends BaseServlet {
 			case SessaoManager.LOGIN_STATUS.OK:
 			case SessaoManager.LOGIN_STATUS.JA_AUTENTICADO:
 				final ConfiguracoesUsuario usuarioAutenticado = SessaoManager.getInstance().getUsuarioAutenticado();
-				final UsuarioVO usuarioVO = new UsuarioVO(usuarioAutenticado.getNome(), usuarioAutenticado.getLogin(), String.valueOf(usuarioAutenticado.getOffset()));
-				respondJson(resp, usuarioVO);
+				respondJson(resp, new ConfiguracoesUsuarioJSON(usuarioAutenticado));
 				break;
 			case SessaoManager.LOGIN_STATUS.USUARIO_NAO_EXISTE:
 				respondError(resp, HttpServletResponse.SC_NOT_FOUND, "O usuário informado não existe!");

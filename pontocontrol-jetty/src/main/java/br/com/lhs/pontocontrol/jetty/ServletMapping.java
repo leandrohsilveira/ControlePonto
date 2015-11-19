@@ -12,7 +12,7 @@ public class ServletMapping {
 	public static void config(final ServletContextHandler contextHandler) {
 		contextHandler.addServlet(new ServletHolder(AutenticacaoServlet.class), "/login");
 		contextHandler.addServlet(new ServletHolder(UsuarioServlet.class), "/usuario");
-		contextHandler.addServlet(new ServletHolder(RegistroMensalServlet.class), "/folha/mensal");
+		contextHandler.addServlet(new ServletHolder(RegistroMensalServlet.class), "/restrito/folha/mensal");
 	}
 
 }
