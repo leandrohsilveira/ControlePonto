@@ -1,6 +1,6 @@
 angular.module('PontoControlFX')
 
-.controller('UsuarioController', function($scope, $location, PontoService, usuarioAutenticado) {
+.controller('UsuarioController', function($scope, $rootScope, $location, PontoService) {
 
 	$scope.usuario = {
 		nome: '',
@@ -8,11 +8,11 @@ angular.module('PontoControlFX')
 		offset: '28800'
 	};
 
-	if(usuarioAutenticado) {
+	if($rootScope.usuarioAutenticado) {
 		$scope.usuario = {
-			nome: usuarioAutenticado.nome,
-			login: usuarioAutenticado.login,
-			offset: usuarioAutenticado.offset
+			nome: $rootScope.usuarioAutenticado.nome,
+			login: $rootScope.usuarioAutenticado.login,
+			offset: $rootScope.usuarioAutenticado.offset
 		}
 	}
 
@@ -25,7 +25,7 @@ angular.module('PontoControlFX')
 
 	$scope.salvar = function () {
 		var httpPromise;
-		if(usuarioAutenticado) {
+		if($rootScope.usuarioAutenticado) {
 			httpPromise = PontoService.atualizarUsuario($scope.usuario);
 		} else {
 			httpPromise = PontoService.cadastrarUsuario($scope.usuario);

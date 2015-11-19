@@ -8,6 +8,7 @@ angular.module('PontoControlFX')
 		PontoService.autenticar({login: $scope.login})
 						.then(function (response) {
 							$rootScope.usuarioAutenticado = response.data;
+							$rootScope.$broadcast('_usuarioAutenticado');
 							$location.path('/');
 						}, function (errorResponse) {
 							PontoService.checkError(errorResponse);

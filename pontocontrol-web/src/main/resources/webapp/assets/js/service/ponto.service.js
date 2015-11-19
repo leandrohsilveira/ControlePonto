@@ -56,7 +56,7 @@ angular.module('PontoControlFX')
 	var _checkError = function (errorResponse) {
 		var data = errorResponse.data;
 		if(errorResponse.status == 401) {
-			$location.path('/login');
+			$location.path('/publico/login');
 			return errorResponse;
 		} else {
 			console.error(errorResponse);

@@ -6,6 +6,6 @@ angular.module('PontoControlFX', ['ngRoute', 'ui.bootstrap'])
 .config(function($routeProvider) {
 	$routeProvider
 
-	.otherwise('/registro/mensal');
+	.otherwise('/restrito/registro/mensal');
 
 });

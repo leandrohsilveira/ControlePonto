@@ -4,7 +4,7 @@ angular.module('PontoControlFX')
 
 	$routeProvider
 
-	.when('/login', {
+	.when('/publico/login', {
 		templateUrl: 'login.html',
 		controller: 'LoginController',
 		resolve: {
@@ -20,14 +20,43 @@ angular.module('PontoControlFX')
 		}
 	})
 
-	.when('/usuario', {
+	.when('/publico/usuario', {
 		templateUrl: 'usuario.html',
 		controller: 'UsuarioController'
 	})
 
-	.when('/registro/mensal', {
+	.when('/restrito/registro/mensal', {
 		templateUrl: 'registro-mensal.html',
 		controller: 'RegistroMensalController'
 	});
 
+
+
+}).run(function ($rootScope, $location, PontoService) {
+	$rootScope.$on("$locationChangeStart",function(event, next, current){
+		if(/\#\/publico/g.test(next)) {
+			if(!$rootScope.usuarioAutenticado) {
+				PontoService.isAutenticado().then(function (response) {
+					if(response.data.autenticado) {
+						$rootScope.usuarioAutenticado = response.data;
+						$rootScope.$broadcast('_usuarioAutenticado');
+					}
+				});
+			}
+		} else if(/\#\/restrito/g.test(next)) {
+			if(!$rootScope.usuarioAutenticado) {
+				PontoService.getUsuarioAutenticado().then(function (response) {
+					if(response.data) {
+						$rootScope.usuarioAutenticado = response.data;
+						$rootScope.$broadcast('_usuarioAutenticado');
+					} else {
+						event.preventDefault();
+						$location.path('/publico/login');
+					}
+				});
+			}
+		} else {
+			console.log('Nenhum padrão de diretório encontrado para Filtrar. URL: ' + next);
+		}
+	});
 });
