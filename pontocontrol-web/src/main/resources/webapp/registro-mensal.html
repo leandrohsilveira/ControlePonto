@@ -2,6 +2,54 @@
 	<div class="col-xs-12 form-group">
 		<h1 class="page-header"><i class="fa fa-clock-o"></i> Relatório de Registro Mensal</h1>
 
+		<div class="table-responsive">
+			<table class="table table-condensed">
+				<thead>
+					<tr>
+						<th>Data</th>
+						<th>Registos</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="(chave, registro) in dias" ng-class="isDataHoje(registro.date) ? 'info' : (!registro.trabalha ? 'active' : '')">
+						<td>
+							<span class="fa" ng-class="getIconeCalendario(registro)"></span>
+							<span> {{registro.date | date: 'EEEE, dd/MM/yyyy'}}</span>
+						</td>
+						<td>
+							<span ng-if="registro.trabalha">
+								<strong>Entrada</strong>: {{registro.entrada}}
+								<br>
+								<strong>Almoço</strong>: {{registro.almoco}}
+								<br>
+								<strong>Retorno</strong>: {{registro.retorno}}
+								<br>
+								<strong>Saída</strong>: {{registro.saida}}
+							</span>
+						</td>
+						<td>
+							<span ng-if="registro.trabalha">
+								<strong>Trabalhado</strong>: {{registro.totalExpediente * offset | secondsToDate}}
+								<br>
+								<strong>Almoço</strong>: {{registro.totalAlmoco * offset | secondsToDate}}
+								<br>
+								<strong>Expediente</strong>: {{offset | secondsToDate}}
+								<br>
+								<strong>Diferença</strong>: {{registro.totalExpediente * offset - offset | secondsToDate}}
+							</span>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3">
+							<strong>Total Mensal</strong>: {{total}}
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
 
 	</div>
 </div>

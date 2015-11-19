@@ -1,31 +1,32 @@
 angular.module('PontoControlFX')
 
 .factory('DateService', function($filter) {
+	var _segundo = 1;
+	var _minuto = _segundo * 60;
+	var _hora = _minuto * 60;
+
 	return {
-		parse : function(dataStr) {
-			if (!dataStr) {
-				return;
+		formatTotalTimeString: function (totalSeconds) {
+			var hora = parseInt(totalSeconds / _hora);
+			var rHora = totalSeconds % _hora;
+			var minuto = parseInt(rHora / _minuto);
+			var rMinuto = rHora % _minuto;
+			var segundo = rMinuto;
+
+			var str = '';
+			if(hora > 0) {
+				str += hora + 'h ';
 			}
-			var d = dataStr.split('-');
-			try {
-				return new Date(d[2], d[1] - 1, d[0]);
-			} catch (e) {
-				return;
+			if(minuto > 0) {
+				str += minuto + 'm ';
 			}
-		},
-		parseFimDoDia: function(dataStr) {
-			if (!dataStr) {
-				return;
+			if(segundo > 0) {
+				str += segundo + 's ';
 			}
-			var d = dataStr.split('-');
-			try {
-				return new Date(d[2], d[1] - 1, d[0], 23, 59, 59);
-			} catch (e) {
-				return;
+			if(!str) {
+				str = '0s';
 			}
-		},
-		format : function(data) {
-			return $filter('date')(data, 'dd-MM-yyyy');
+			return str;
 		}
 	}
 })
