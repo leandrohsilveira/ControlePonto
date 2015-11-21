@@ -2,6 +2,14 @@
 	<div class="col-xs-12 form-group">
 		<h1 class="page-header"><i class="fa fa-clock-o"></i> Relatório de Registro Mensal</h1>
 
+		<div class="center">
+			<button class="btn btn-default" ng-click="nav.irParaAnoAnterior()"><i class="fa fa-fast-backward"></i> {{nav.anoAnterior() | date: 'MMM yy'}}</button>
+			<button class="btn btn-default" ng-click="nav.irParaMesAnterior()"><i class="fa fa-step-backward"></i> {{nav.mesAnterior() | date: 'MMM yy'}}</button>
+			<button class="btn btn-default" ng-click="nav.irParaAtual()" ng-if="!nav.isAtualSelecionado()"><i class="fa fa-refresh"></i> {{nav.atual() | date: 'MMM yy'}}</button>
+			{{nav.controle() | date: 'MMM yy'}}
+			<button class="btn btn-default" ng-click="nav.irParaMesSeguinte()">{{nav.mesSeguinte() | date: 'MMM yy'}} <i class="fa fa-step-forward"></i></button>
+			<button class="btn btn-default" ng-click="nav.irParaAnoSeguinte()">{{nav.anoSeguinte() | date: 'MMM yy'}} <i class="fa fa-fast-forward"></i></button>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-condensed">
 				<thead>
@@ -50,6 +58,13 @@
 				</tfoot>
 			</table>
 		</div>
-
+		<div class="center">
+			<button class="btn btn-default" ng-click="nav.irParaAnoAnterior()"><i class="fa fa-fast-backward"></i> {{nav.anoAnterior() | date: 'MMM yy'}}</button>
+			<button class="btn btn-default" ng-click="nav.irParaMesAnterior()"><i class="fa fa-step-backward"></i> {{nav.mesAnterior() | date: 'MMM yy'}}</button>
+			<button class="btn btn-default" ng-click="nav.irParaAtual()" ng-if="!nav.isAtualSelecionado()"><i class="fa fa-refresh"></i> {{nav.atual() | date: 'MMM yy'}}</button>
+			{{nav.controle() | date: 'MMM yy'}}
+			<button class="btn btn-default" ng-click="nav.irParaMesSeguinte()">{{nav.mesSeguinte() | date: 'MMM yy'}} <i class="fa fa-step-forward"></i></button>
+			<button class="btn btn-default" ng-click="nav.irParaAnoSeguinte()">{{nav.anoSeguinte() | date: 'MMM yy'}} <i class="fa fa-fast-forward"></i></button>
+		</div>
 	</div>
 </div>

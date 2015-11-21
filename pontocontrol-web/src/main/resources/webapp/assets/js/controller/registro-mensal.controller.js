@@ -9,6 +9,12 @@ angular.module('PontoControlFX')
 
 	$scope.offset = usuarioAutenticado.offset;
 
+	$scope.nav = new FolhaPontoNav(now, function (control) {
+		$scope.mes = control.getMonth();
+		$scope.ano = control.getFullYear();
+		getFolhaMensal();
+	});
+
 	$scope.horarioSemanal = [
 		usuarioAutenticado.domingo,
 		usuarioAutenticado.segunda,
@@ -48,11 +54,11 @@ angular.module('PontoControlFX')
 		$scope.total = '0s';
 		var d = 1;
 		var date;
-		do {
+		while (!date || (date = new Date($scope.ano, $scope.mes, d)).getMonth() == $scope.mes) {
 			date = new Date($scope.ano, $scope.mes, d);
 			$scope.dias[d] = {dia: d, date: date, ativo: false, trabalha: $scope.horarioSemanal[date.getDay()], entrada: '', almoco: '', retorno: '', saida: '', totalExpediente: 0, totalAlmoco: 0};
 			d++;
-		} while (date.getMonth() == $scope.mes);
+		};
 	};
 
 	var atualizarRegistros = function (folhaMensal) {
@@ -71,13 +77,13 @@ angular.module('PontoControlFX')
 	var getFolhaMensal = function () {
 		PontoService.getFolhaMensal($scope.mes, $scope.ano)
 					.then(function (response) {
+						iniciarRegistros();
 						return atualizarRegistros(response.data);
 					}, function (errorResponse) {
 						return PontoService.checkError(errorResponse);
 					});
 	};
 
-	iniciarRegistros();
 	getFolhaMensal();
 
 });

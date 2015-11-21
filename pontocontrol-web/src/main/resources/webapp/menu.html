@@ -10,8 +10,7 @@
 		<div ng-if="usuario" class="collapse navbar-collapse" id="navbar-collapse">
 			<ul class="nav navbar-nav navbar-right">
 				<li><a ng-href="#/restrito/folha/mensal"><i class="fa fa-clock-o"></i> Folha Mensal</a></li>
-				<li><a ng-href="#/publico/usuario"><i class="fa fa-cog"></i> Configurações</a></li>
-				<li><span class="navbar-text text-default"><i class="fa fa-user"></i> Olá, {{usuario.nome ? usuario.nome : usuario.login}}</span></li>
+				<li><a ng-href="#/publico/usuario" class="text-default"><i class="fa fa-user"></i> Olá, {{usuario.nome ? usuario.nome : usuario.login}}</a></li>
 			</ul>
 		 </div>
 	</div>
