@@ -23,7 +23,7 @@
 					<tr ng-repeat="(chave, registro) in dias" ng-class="isDataHoje(registro.date) ? 'info' : (!registro.trabalha ? 'active' : '')">
 						<td>
 							<span class="fa" ng-class="getIconeCalendario(registro)"></span>
-							<span> {{registro.date | date: 'EEEE, dd/MM/yyyy'}}</span>
+							<span> {{registro.date | date: 'EEEE, dd/MM/yyyy' : '+0000'}}</span>
 						</td>
 						<td>
 							<span ng-if="registro.trabalha">

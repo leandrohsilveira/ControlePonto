@@ -54,8 +54,7 @@ angular.module('PontoControlFX')
 		$scope.total = '0s';
 		var d = 1;
 		var date;
-		while (!date || (date = new Date($scope.ano, $scope.mes, d)).getMonth() == $scope.mes) {
-			date = new Date($scope.ano, $scope.mes, d);
+		while ((date = new Date($scope.ano, $scope.mes, d, 12, 0, 0)).getMonth() == $scope.mes) {
 			$scope.dias[d] = {dia: d, date: date, ativo: false, trabalha: $scope.horarioSemanal[date.getDay()], entrada: '', almoco: '', retorno: '', saida: '', totalExpediente: 0, totalAlmoco: 0};
 			d++;
 		};
@@ -69,7 +68,7 @@ angular.module('PontoControlFX')
 				$scope.dias[_dia] = diario;
 				$scope.dias[_dia].ativo = true;
 				$scope.dias[_dia].trabalha = true;
-				$scope.dias[_dia].date = new Date(folhaMensal.ano, folhaMensal.mes, _dia);
+				$scope.dias[_dia].date = new Date(folhaMensal.ano, folhaMensal.mes, _dia, 12, 0, 0);
 			}
 		}
 	};

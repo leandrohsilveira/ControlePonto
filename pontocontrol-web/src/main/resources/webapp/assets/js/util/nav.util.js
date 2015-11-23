@@ -10,7 +10,7 @@ var FolhaPontoNav = (function () {
 		_agora = new Date();
 
 		if(!changeListener) changeListener = function (date) {};
-		if(!dataInicial) dataInicial = now;
+		if(!dataInicial) dataInicial = _agora;
 
 		_controle = dataInicial;
 		_listener = changeListener;
@@ -18,11 +18,11 @@ var FolhaPontoNav = (function () {
 
 	// funções privadas
 	var _getDate = function (controle, mes, ano) {
-		return new Date(controle.getFullYear() + ano, controle.getMonth() + mes);
+		return new Date(controle.getFullYear() + ano, controle.getMonth() + mes, 12, 0, 0);
 	}
 
 	var _adicionarAoControle = function (mes, ano) {
-		_controle = _getDate(_controle, mes, ano);
+		_controle = _getDate(_controle, mes, ano, 12, 0, 0);
 		_listener(_controle);
 	}
 
