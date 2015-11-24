@@ -13,6 +13,8 @@ angular.module('PontoControlFX')
 						}, function (errorResponse) {
 							PontoService.checkError(errorResponse);
 						});
-	}
+	};
+
+	
 
 });

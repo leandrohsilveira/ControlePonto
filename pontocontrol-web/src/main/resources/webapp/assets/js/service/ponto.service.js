@@ -42,6 +42,13 @@ angular.module('PontoControlFX')
 		});
 	};
 
+	var _sair = function () {
+		return $http({
+			url: url + '/login',
+			method: 'DELETE'
+		});
+	};
+
 	var _getFolhaMensal = function(mes, ano) {
 		var now = new Date();
 		if(!mes) {
@@ -79,6 +86,9 @@ angular.module('PontoControlFX')
 	return {
 		autenticar: function (data) {
 			return _autenticar(data);
+		},
+		sair: function () {
+			return _sair();
 		},
 		isAutenticado: function () {
 			return _isAutenticado();

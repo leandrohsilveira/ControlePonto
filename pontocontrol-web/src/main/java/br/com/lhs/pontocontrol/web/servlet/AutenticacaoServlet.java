@@ -46,4 +46,14 @@ public class AutenticacaoServlet extends BaseServlet {
 		});
 	}
 
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		final boolean logout = SessaoManager.getInstance().sair();
+		if (logout) {
+			respondNoContent(resp);
+		} else {
+			respondError(resp, HttpServletResponse.SC_UNAUTHORIZED, "Não é possível realizar logout se não estiver autenticado!");
+		}
+	}
+
 }

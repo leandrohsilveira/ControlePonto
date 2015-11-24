@@ -72,4 +72,12 @@ public class SessaoManager extends BaseSessaoManager {
 		}
 	}
 
+	public boolean sair() {
+		if (isUsuarioAutenticado()) {
+			usuario = null;
+			return true;
+		}
+		return false;
+	}
+
 }

@@ -30,7 +30,7 @@ angular.module('PontoControlFX')
 			iniciarRegistros();
 			return atualizarRegistros(response.data);
 		});
-	}
+	};
 
 	$scope.isDataHoje = function (date) {
 		return now.getDate() == date.getDate() && now.getMonth() == date.getMonth() && now.getFullYear() == date.getFullYear();
