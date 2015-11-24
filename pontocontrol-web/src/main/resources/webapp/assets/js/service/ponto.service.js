@@ -24,6 +24,13 @@ angular.module('PontoControlFX')
 		});
 	};
 
+	var _registrarAgora = function () {
+		return $http({
+			url: url + '/restrito/registrar',
+			method: 'POST'
+		});
+	};
+
 	var _autenticar = function (params) {
 		return $http({
 			url: url + '/login',
@@ -78,6 +85,9 @@ angular.module('PontoControlFX')
 		},
 		getUsuarioAutenticado: function () {
 			return _getUsuarioAutenticado();
+		},
+		registrarAgora: function () {
+			return _registrarAgora();
 		},
 		cadastrarUsuario: function (usuario) {
 			return _salvarUsuario('POST', usuario);

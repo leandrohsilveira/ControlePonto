@@ -25,6 +25,13 @@ angular.module('PontoControlFX')
 		usuarioAutenticado.sabado
 	];
 
+	$scope.registrarAgora = function () {
+		PontoService.registrarAgora().then(function (response) {
+			iniciarRegistros();
+			return atualizarRegistros(response.data);
+		});
+	}
+
 	$scope.isDataHoje = function (date) {
 		return now.getDate() == date.getDate() && now.getMonth() == date.getMonth() && now.getFullYear() == date.getFullYear();
 	};
