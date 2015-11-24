@@ -54,4 +54,22 @@ public class RegistroDiarioServlet extends BaseServlet {
 		});
 	}
 
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		acceptJson(req, resp, RegistroDiarioPontoJSON.class, (content) -> {
+			final Integer mes = getParameterAsIntegerOrDefault(req, "mes", DateUtils.getActualMonth());
+			final Integer ano = getParameterAsIntegerOrDefault(req, "ano", DateUtils.getActualYear());
+			final IFolhaPontoController controller = ControllerFactory.localizar(IFolhaPontoController.class);
+			final FolhaMensalPontoJSON folhaMensalJson = controller.recuperarFolhaMensal(ano, mes);
+			final FolhaMensalPonto folhaMensal = folhaMensalJson.toModel();
+			final RegistroDiarioPonto registroDiario = content.toModel();
+			if (folhaMensal.getRegistros().containsKey(registroDiario.getDia())) {
+				folhaMensal.getRegistros().put(registroDiario.getDia(), registroDiario);
+				respondJson(resp, new RegistroDiarioPontoJSON(registroDiario));
+			} else {
+				respondError(resp, HttpServletResponse.SC_NOT_FOUND, "Não foi possível localizar o registro desta data.");
+			}
+		});
+	}
+
 }
