@@ -49,7 +49,7 @@ public class UsuarioServlet extends BaseServlet {
 				configuracoesUsuario.setNome(content.getNome());
 				configuracoesUsuario.setOffset(Long.valueOf(content.getOffset()));
 				SessaoManager.getInstance().atualizarUsuario(configuracoesUsuario);
-				respondNoContent(resp);
+				respondJson(resp, new ConfiguracoesUsuarioJSON(configuracoesUsuario));
 			} else {
 				respondError(resp, HttpServletResponse.SC_UNAUTHORIZED, "Você deve estar autenticado para atualizar seu usuário.");
 			}

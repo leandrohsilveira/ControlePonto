@@ -33,6 +33,8 @@ angular.module('PontoControlFX')
 
 		httpPromise.then(function (response) {
 			alert('Usuario armazenado com sucesso.');
+			$rootScope.usuarioAutenticado = response.data;
+			$rootScope.$broadcast('_usuarioAutenticado');
 			$location.path('/');
 		}, function (errorResponse) {
 			PontoService.checkError(errorResponse);
