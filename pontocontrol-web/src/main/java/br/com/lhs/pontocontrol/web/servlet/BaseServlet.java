@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.JsonObject;
 
@@ -109,6 +110,18 @@ public class BaseServlet extends HttpServlet {
 
 	protected void respondNoContent(final HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+	}
+
+	protected Integer getParameterAsIntegerOrDefault(HttpServletRequest req, String name, Integer defaultValue) {
+		final String parameterStr = req.getParameter(name);
+		if (StringUtils.isNotBlank(parameterStr)) {
+			try {
+				return Integer.valueOf(parameterStr);
+			} catch (final NumberFormatException e) {
+				// suppressed.
+			}
+		}
+		return defaultValue;
 	}
 
 }
