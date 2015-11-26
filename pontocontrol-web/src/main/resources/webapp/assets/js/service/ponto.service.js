@@ -1,6 +1,6 @@
 angular.module('PontoControlFX')
 
-.factory('PontoService', function($q, $http, $location, url) {
+.service('PontoService', function($q, $http, $location, url) {
 
 	var _isAutenticado = function () {
 		return $http({
@@ -67,6 +67,37 @@ angular.module('PontoControlFX')
 		});
 	};
 
+	var _getFolhaDiaria = function (dia, mes, ano) {
+		var now = new Date();
+		if(!dia) dia = now.getDate();
+		if(!mes) mes = now.getMonth();
+		if(!ano) ano = now.getFullYear();
+		return $http({
+			url: url + '/restrito/folha/diario',
+			method: 'GET',
+			params: {
+				dia: dia,
+				mes: mes,
+				ano: ano
+			}
+		});
+	};
+
+	var _cadastrarFolhaDiaria = function (folha, mes, ano) {
+		var now = new Date();
+		if(!mes) mes = now.getMonth();
+		if(!ano) ano = now.getFullYear();
+		$http({
+			url: url + '/restrito/folha/diario',
+			methdo: 'POST',
+			data: folha,
+			params: {
+				mes: mes,
+				ano: ano
+			}
+		});
+	};
+
 	var _checkError = function (errorResponse) {
 		var data = errorResponse.data;
 		if(errorResponse.status == 401) {
@@ -108,9 +139,12 @@ angular.module('PontoControlFX')
 		getFolhaMensal: function (mes, ano) {
 			return _getFolhaMensal(mes, ano);
 		},
+		getFolhaDiaria: function (dia, mes, ano) {
+			return _getFolhaDiaria(dia, mes, ano);
+		},
 		checkError: function (errorResponse) {
 			return _checkError(errorResponse);
 		}
-	}
+	};
 
 });

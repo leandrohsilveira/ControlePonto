@@ -20,7 +20,7 @@
 					<tr>
 						<th>Data</th>
 						<th>Registos</th>
-						<th>Total</th>
+						<th colspan="2">Total</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -50,6 +50,11 @@
 								<br>
 								<strong>Diferença</strong>: {{registro.totalExpediente * offset - offset | secondsToDate}}
 							</span>
+						</td>
+						<td>
+
+							<button ng-click="editarRegistro(registro.date)" class="btn btn-default"><i class="fa fa-pencil"></i></button>
+
 						</td>
 					</tr>
 				</tbody>

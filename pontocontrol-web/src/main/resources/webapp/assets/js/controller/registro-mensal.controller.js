@@ -1,6 +1,6 @@
 angular.module('PontoControlFX')
 
-.controller('RegistroMensalController', function($scope, $rootScope, DateService, PontoService) {
+.controller('RegistroMensalController', function($scope, $rootScope, $location, DateService, PontoService) {
 	var now = new Date();
 	var usuarioAutenticado = $rootScope.usuarioAutenticado;
 	usuarioAutenticado = usuarioAutenticado ? usuarioAutenticado : {};
@@ -54,6 +54,13 @@ angular.module('PontoControlFX')
 		} else {
 			return 'fa-calendar-minus-o';
 		}
+	};
+
+	$scope.editarRegistro = function (date) {
+		$location.search('dia', date.getDate());
+		$location.search('mes', date.getMonth());
+		$location.search('ano', date.getFullYear());
+		$location.path('/restrito/registro/diario');
 	};
 
 	var iniciarRegistros = function () {

@@ -1,0 +1,38 @@
+<div class="row">
+	<div class="col-xs-12 form-group">
+		<h1 class="page-header"><i class="fa fa-file-text-o"></i> Folha de Registro Diário</h1>
+
+		<form name="registroDiarioForm" class="form-horizontal" ng-submit="salvar()">
+
+			<div class="form-group">
+				<label for="data">Data do Registro</label>
+				<input type="text" id="data" disabled class="form-control" value="{{folhaDiaria.data | date : 'fullDate'}}">
+			</div>
+			<hr>
+			<div class="form-group">
+				<label for="entrada">Entrada</label>
+				<input type="text" id="entrada" class="form-control time-mask" ng-model="folhaDiaria.entrada">
+			</div>
+			<div class="form-group">
+				<label for="almoco">Saída para o Almoço</label>
+				<input type="text" id="almoco" class="form-control time-mask" ng-model="folhaDiaria.almoco">
+			</div>
+			<div class="form-group">
+				<label for="retorno">Retorno do Almoço</label>
+				<input type="text" id="retorno" class="form-control time-mask" ng-model="folhaDiaria.retorno">
+			</div>
+			<div class="form-group">
+				<label for="saida">Fim do Expediente</label>
+				<input type="text" id="saida" class="form-control time-mask" ng-model="folhaDiaria.saida">
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Salvar</button>
+				<a ng-href="#/" class="btn btn-default"><i class="fa fa-times"></i> Cancelar</a>
+			</div>
+
+		</form>
+
+
+	</div>
+</div>

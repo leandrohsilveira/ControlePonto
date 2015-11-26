@@ -28,6 +28,11 @@ angular.module('PontoControlFX')
 	.when('/restrito/registro/mensal', {
 		templateUrl: 'registro-mensal.html',
 		controller: 'RegistroMensalController'
+	})
+	
+	.when('/restrito/registro/diario', {
+		templateUrl: 'registro-diario.html',
+		controller: 'RegistroDiarioController'
 	});
 
 
